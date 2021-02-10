@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const redis = require("redis");
-const roomGenerator = require('./room-generator');
+const roomGenerator = require('./room-generator.ts');
 const { promisify } = require("util");
 
 require('dotenv').config();
