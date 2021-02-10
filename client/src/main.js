@@ -1,0 +1,35 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+
+import Intro from './pages/Intro.vue';
+
+import App from './App.vue';
+
+import './scss/style.scss';
+
+Vue.use(VueRouter);
+
+Vue.config.productionTip = false;
+
+const routes = [
+  { path: '/', component: Intro },
+  { path: '*', redirect: '/' }, 
+];
+
+const router = new VueRouter({
+  hash: true,
+  routes: routes,
+});
+
+new Vue({
+  el: '#app',
+  router,
+  components: {
+    App
+  },
+  template: '<App/>'
+});
+
+window.addEventListener('popstate', () => {
+  app.currentRoute = window.location.pathname
+});
