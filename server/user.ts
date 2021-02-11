@@ -1,0 +1,1 @@
+// represents a client user for the respective websocket

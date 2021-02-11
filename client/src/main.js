@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Intro from './pages/Intro.vue';
+import Room from './pages/Room.vue';
 
 import App from './App.vue';
 
@@ -13,7 +14,7 @@ Vue.config.productionTip = false;
 
 const routes = [
   { path: '/', component: Intro },
-  { path: '*', redirect: '/' }, 
+  { name: 'room', path: '/rooms/:roomId', component: Room }
 ];
 
 const router = new VueRouter({

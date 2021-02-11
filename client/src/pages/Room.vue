@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    poggers
+    Welcome to the new room!
     <button v-on:click="createRoom">Create Room</button>
   </div>
 </template>
@@ -9,7 +9,7 @@
 // import axios from 'axios';
 
 export default {
-  name: 'Intro',
+  name: 'ROOM',
   data: function() {
     return {
       connection: null
@@ -21,8 +21,7 @@ export default {
         //  axios
         //   .get('http://localhost:8080/create-room', { crossdomain: true })
         //   .then(response => (alert(response.data)))
-        this.connection.send('Create room!');
-        this.$router.push({ name: 'room', params: { roomId: 'asdasdaa' } })
+        this.connection.send('PAUSE!!!');
     }
   },
   mounted () {
@@ -48,7 +47,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  #app {
-    background-color: tomato;
-  }
+#app {
+  background-color: tomato;
+}
 </style>>
