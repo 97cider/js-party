@@ -6,21 +6,42 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   name: 'Intro',
+  data: function() {
+    return {
+      connection: null
+    }
+  },
   methods: {
     createRoom: function(event) {
-         axios
-          .get('http://localhost:8080/create-room', { crossdomain: true })
-          .then(response => (alert(response.data)))
+      console.log(this.connection.readyState)
+        //  axios
+        //   .get('http://localhost:8080/create-room', { crossdomain: true })
+        //   .then(response => (alert(response.data)))
+        this.connection.send('PAUSE!!!');
     }
   },
   mounted () {
-    axios
-      .get('http://localhost:8080/test', { crossdomain: true })
-      .then(response => (alert(response.data)))
+    // axios
+    //   .get('http://localhost:8080/test', { crossdomain: true })
+    //   .then(response => (alert(response.data)))
+
+    let conn = new WebSocket('ws://localhost:8080');
+
+    this.connection = conn;
+
+    this.connection.onopen = function open() {
+      conn.send('HOLY SHIIITTTT');
+      alert("CONNECTION SETUP!");
+    };
+
+    this.connection.onmessage = function message(data) {
+      alert(`message got: ${data}`);
+    };
+    
   }
 }
 </script>
