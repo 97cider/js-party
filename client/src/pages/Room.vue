@@ -35,11 +35,11 @@ export default {
 
     this.connection.onopen = function open() {
       conn.send('HOLY SHIIITTTT');
-      alert("CONNECTION SETUP!");
+      console.log("CONNECTION SETUP!");
     };
 
     this.connection.onmessage = function message(data) {
-      alert(`message got: ${data}`);
+      console.log(`message got: ${data}`);
     };
     
   }

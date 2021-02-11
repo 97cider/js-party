@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: 'Intro',
@@ -17,32 +17,17 @@ export default {
   },
   methods: {
     createRoom: function(event) {
-      console.log(this.connection.readyState)
-        //  axios
-        //   .get('http://localhost:8080/create-room', { crossdomain: true })
-        //   .then(response => (alert(response.data)))
-        this.connection.send('Create room!');
-        this.$router.push({ name: 'room', params: { roomId: 'asdasdaa' } })
+         axios
+          .post('http://localhost:8080/room', { crossdomain: true })
+          .then(response => {
+            console.log(`Room ID: ${response.data.message}`);
+            this.$router.push({ name: 'room', params: { roomId: response.data.message } })
+          });
+
     }
   },
   mounted () {
-    // axios
-    //   .get('http://localhost:8080/test', { crossdomain: true })
-    //   .then(response => (alert(response.data)))
-
-    let conn = new WebSocket('ws://localhost:8080');
-
-    this.connection = conn;
-
-    this.connection.onopen = function open() {
-      conn.send('HOLY SHIIITTTT');
-      alert("CONNECTION SETUP!");
-    };
-
-    this.connection.onmessage = function message(data) {
-      alert(`message got: ${data}`);
-    };
-    
+    console.log('Welcome to .js-party!!!');
   }
 }
 </script>
