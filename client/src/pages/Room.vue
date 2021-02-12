@@ -4,7 +4,7 @@
     <input v-model="username" placeholder="UserName">
     <p>Your Username is: {{ username }}</p>
     <button v-on:click="joinRoom">Join Room!</button>
-    <button v-on:click="joinRoom">Pause Video!</button>
+    <button v-on:click="pauseVideo">Pause Video!</button>
     <div>Room ID = {{ $route.params.roomId }}</div>
   </div>
 </template>
@@ -23,10 +23,11 @@ export default {
   },
   methods: {
     createRoom: function(event) {
-      console.log(this.connection.readyState)
+      console.log(this.connection.readyState);
         this.connection.send('PAUSE!!!');
     },
     pauseVideo : function () {
+      console.log(this.connection.readyState);
       this.connection.send('PAUSE!!!');
     },
     joinRoom: function () {

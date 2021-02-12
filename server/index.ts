@@ -70,6 +70,10 @@ server.on('upgrade', function (request, socket, head) {
 wss.on('connection', function connection(ws, request) {
     const roomId = request.session.roomId;
     console.log(`A User has connected to a session-based room with id ${roomId}`);
+    ws.on('message', function (message) {
+        console.log(`Received message ${message} from user ${roomId}`);
+        ws.send(message);
+      });
     // ws.on('message', function incoming(message) {
     //     wss.clients.forEach(function each(client) {
     //         if (client.readyState === 1) {
