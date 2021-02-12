@@ -1,47 +1,66 @@
 <template>
   <div id="app">
     Welcome to the new room!
-    <button v-on:click="createRoom">Create Room</button>
+    <input v-model="username" placeholder="UserName">
+    <p>Your Username is: {{ username }}</p>
+    <button v-on:click="joinRoom">Join Room!</button>
+    <button v-on:click="joinRoom">Pause Video!</button>
+    <div>Room ID = {{ $route.params.roomId }}</div>
   </div>
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: 'ROOM',
   data: function() {
     return {
-      connection: null
+      connection: null,
+      username: "",
+      roomId: "",
     }
   },
   methods: {
     createRoom: function(event) {
       console.log(this.connection.readyState)
-        //  axios
-        //   .get('http://localhost:8080/create-room', { crossdomain: true })
-        //   .then(response => (alert(response.data)))
         this.connection.send('PAUSE!!!');
-    }
+    },
+    pauseVideo : function () {
+      this.connection.send('PAUSE!!!');
+    },
+    joinRoom: function () {
+      let id = this.roomId;
+      console.log(id);
+      axios
+          .post('http://localhost:8080/joinRoom', { roomId: id }, 
+          { 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+            crossDomain: true,
+          })
+          .then(response => {
+            this.buildWebSocketConnection();
+      });
+    },
+    buildWebSocketConnection: function () {
+      let conn = new WebSocket('ws://localhost:8080');
+
+      this.connection = conn;
+
+      this.connection.onopen = function open() {
+        conn.send({ username: this.username });
+      };
+
+      this.connection.onmessage = function message(data) {
+        console.log(`message got: ${data}`);
+      };
+    },
   },
   mounted () {
-    // axios
-    //   .get('http://localhost:8080/test', { crossdomain: true })
-    //   .then(response => (alert(response.data)))
-
-    let conn = new WebSocket('ws://localhost:8080');
-
-    this.connection = conn;
-
-    this.connection.onopen = function open() {
-      conn.send('HOLY SHIIITTTT');
-      console.log("CONNECTION SETUP!");
-    };
-
-    this.connection.onmessage = function message(data) {
-      console.log(`message got: ${data}`);
-    };
-    
+    this.roomId = this.$route.params.roomId;
   }
 }
 </script>
