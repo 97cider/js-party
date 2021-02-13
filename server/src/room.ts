@@ -1,11 +1,12 @@
-class Room {
-    ws: Object;
-    clients: Object[];
-    
-    mediaQueue: Object[];
+import ProgressionType = require('./ProgressionType');
 
-    constructor(ws: Object) {
-        this,ws = ws;
+class Room {
+    ws: Object | undefined;
+    clients: Object[] | undefined;
+    
+    mediaQueue: Object[] | undefined;
+
+    constructor() {
     }
 
     navigateToNextSong(progression: ProgressionType, isLooping: boolean) {
@@ -13,3 +14,5 @@ class Room {
         console.log("Hey a song ended!");
     }
 }
+
+export = Room;

@@ -3,3 +3,5 @@ enum ProgressionType {
     BiasedRandom,
     Linear
 }
+
+export = ProgressionType;

@@ -32,9 +32,10 @@ export default {
     },
     joinRoom: function () {
       let id = this.roomId;
+      let username = this.username;
       console.log(id);
       axios
-          .post('http://localhost:8080/joinRoom', { roomId: id }, 
+          .post('http://localhost:8080/joinRoom', { roomId: id, username: username }, 
           { 
             headers: {
               'Content-Type': 'application/json',

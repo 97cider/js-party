@@ -1,5 +1,3 @@
-'use strict';
-
 const session = require('express-session');
 const http = require('http');
 const webSocket = require('ws');
@@ -9,6 +7,7 @@ const roomGenerator = require('./room-generator.ts');
 const { promisify } = require("util");
 const express = require('express');
 const uuid = require('uuid');
+const Room = require('./room.ts');
 
 require('dotenv').config();
 
@@ -20,13 +19,14 @@ const sessionParser = session({
 
 const port = process.env.port;
 const app = express();
+// map of room to roomids
 const map = new Map();
 
 app.use(sessionParser);
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-app.use(function(req, res, next) {
+app.use(function(req : any, res : any, next : any) {
     res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -34,15 +34,19 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.post('/room', function(req, res) {
+app.post('/room', function(req : any, res : any) {
     const roomId = uuid.v4();
     console.log("GENERATING ROOM");
+
+    let room = new Room();
+    map.set(roomId, room);
+
     req.session.roomId = req.body.roomId;
     res.send({ result: 'OK', message:roomId });
 });
 
-app.post('/joinRoom', function(req, res) {
-    console.log(`Joining Room with ID: ${req.body.roomId}`);
+app.post('/joinRoom', function(req : any, res : any) {
+    console.log(`${req.body.username} is joining Room with ID: ${req.body.roomId}`);
     req.session.roomId = req.body.roomId;
     console.log('ROOM SESSION ID:');
     console.log(req.session.roomId);
@@ -52,7 +56,7 @@ app.post('/joinRoom', function(req, res) {
 const server = http.createServer(app);
 const wss = new webSocket.Server({ clientTracking: false, noServer: true });
 
-server.on('upgrade', function (request, socket, head) {
+server.on('upgrade', function (request : any, socket : any, head : any) {
     sessionParser(request, {}, () => {
         if (!request.session.roomId) {
             console.log('UNAUTHORIZED ACCESS!');
@@ -61,19 +65,34 @@ server.on('upgrade', function (request, socket, head) {
             return;
         }
 
-        wss.handleUpgrade(request, socket, head, function (ws) {
+        wss.handleUpgrade(request, socket, head, function (ws : any) {
             wss.emit('connection', ws, request);
         });
     });
 });
 
-wss.on('connection', function connection(ws, request) {
+wss.on('connection', function connection(ws : any, request : any) {
     const roomId = request.session.roomId;
     console.log(`A User has connected to a session-based room with id ${roomId}`);
-    ws.on('message', function (message) {
+
+    //map.set(roomId, ws);
+    let currentRoom = map.get(roomId);
+    if(!currentRoom) {
+        // tried connecting to a nonexistant room
+        return;
+    }
+
+    currentRoom.ws = ws;
+
+    ws.on('message', function (message : any) {
         console.log(`Received message ${message} from user ${roomId}`);
         ws.send(message);
       });
+
+    ws.on('close', function (message : any) {
+        console.log('Closing connection to websocket.');
+        map.delete(roomId);
+    });
     // ws.on('message', function incoming(message) {
     //     wss.clients.forEach(function each(client) {
     //         if (client.readyState === 1) {
