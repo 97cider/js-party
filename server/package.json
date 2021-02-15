@@ -21,6 +21,7 @@
     "ws": "^7.4.3"
   },
   "devDependencies": {
+    "@types/node": "^14.14.28",
     "dotenv": "^8.2.0",
     "ts-node": "^9.1.1"
   }
