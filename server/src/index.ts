@@ -114,12 +114,23 @@ wss.on('connection', function connection(ws : any, request : any) {
 
     ws.on('message', function (message : any) {
         console.log(`Received message ${message} from user ${roomId}`);
-        ws.send(message);
+        try {
+            let data = JSON.parse(message);
+            if (data.actionType) {
+                console.log("Parsing current room action!");
+                currentRoom.parseAction(data.actionType);
+            }
+            ws.send(message);
+        } catch (err) {
+            console.log(`Error parsing the message from the client: ${err}`);
+        }
       });
 
     ws.on('close', function (message : any) {
         console.log('Closing connection to websocket.');
-        map.delete(roomId);
+        // remove the client from the room, if the room has no clients, 
+        // setup a cron job to remove the websocket connection after 24 hours
+        // map.delete(roomId);
     });
 });
 

@@ -37,7 +37,10 @@ export default {
     },
     pauseVideo : function () {
       console.log(this.connection.readyState);
-      this.connection.send('PAUSE!!!');
+      // this.connection.send('PAUSE!!!');
+      this.connection.send(JSON.stringify({
+            actionType: 'ToggleVideo', 
+      }));
     },
     joinRoom: function () {
       let id = this.roomId;
@@ -63,7 +66,15 @@ export default {
       this.connection = conn;
 
       this.connection.onopen = function open() {
+        // Send the user back to the webserver
         conn.send({ username: this.username });
+        console.log(`Opening connection: ${this.username}`);
+
+        if (vm.clients.length == 0 || vm.clients === undefined) {
+          // Add the newly connected client to the list of clients
+          console.log(`Added new user ${this.username}`);
+          vm.clients.push(this.username);
+        }
       };
 
       this.connection.onmessage = function message(message) {
@@ -74,11 +85,8 @@ export default {
           console.log(data);
           if (data.actionType) {
             if (data.actionType == 'roomConnect') {
-              // this.clients = data.clients;
+              // add the last added client to the list of added clients
               vm.clients.push(data.clients.pop());
-              console.log("UPDATED LIST OF CLIENTS");
-              console.log(vm.clients);
-              // console.log(this.clients);
             }
           }
         } catch (err) {
