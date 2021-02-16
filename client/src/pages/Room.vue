@@ -8,7 +8,7 @@
     <div>Room ID = {{ $route.params.roomId }}</div>
     <div>
       List of users:
-        <li v-for="(client, index) in clients" :key="index">
+        <li v-for="client in this.clients" :key="client">
           UserName: {{ client }}
         </li>
           <!-- {{ client }}
@@ -58,6 +58,7 @@ export default {
     },
     buildWebSocketConnection: function () {
       let conn = new WebSocket('ws://localhost:8080');
+      let vm = this;
 
       this.connection = conn;
 
@@ -73,8 +74,11 @@ export default {
           console.log(data);
           if (data.actionType) {
             if (data.actionType == 'roomConnect') {
-              this.clients = data.clients;
-              console.log(this.clients);
+              // this.clients = data.clients;
+              vm.clients.push(data.clients.pop());
+              console.log("UPDATED LIST OF CLIENTS");
+              console.log(vm.clients);
+              // console.log(this.clients);
             }
           }
         } catch (err) {
