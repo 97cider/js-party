@@ -45,11 +45,33 @@ app.post('/room', function(req : any, res : any) {
     res.send({ result: 'OK', message:roomId });
 });
 
+app.post('/rejoinRoom', function(req : any, res : any) {
+    // TODO: Do some caching to allow a user to rejoin a room after leaving connection
+});
+
 app.post('/joinRoom', function(req : any, res : any) {
+    const roomId = req.body.roomId;
+    const userName = req.body.username;
+    
+    if (!roomId) {
+        return;
+    }
+    
+    let room = map.get(roomId);
     console.log(`${req.body.username} is joining Room with ID: ${req.body.roomId}`);
     req.session.roomId = req.body.roomId;
-    console.log('ROOM SESSION ID:');
-    console.log(req.session.roomId);
+    room.clients.push(userName);
+
+    if (room.ws) {
+        // the room already exists, send a signal letting the other users
+        // know that another user has connected
+        console.log("HEY THIS ROOM IS ALREADY CREATED! LETS SEND SOME CALLBACKS");
+        room.ws.send(JSON.stringify({
+            actionType: 'roomConnect', 
+            clients: room.clients
+        }));
+    }
+    
     res.send({ result: 'OK', message:'Joined a room!' });
 });
 
@@ -73,16 +95,22 @@ server.on('upgrade', function (request : any, socket : any, head : any) {
 
 wss.on('connection', function connection(ws : any, request : any) {
     const roomId = request.session.roomId;
-    console.log(`A User has connected to a session-based room with id ${roomId}`);
 
     //map.set(roomId, ws);
     let currentRoom = map.get(roomId);
     if(!currentRoom) {
         // tried connecting to a nonexistant room
+        console.log('Room does not exists! Can not connect')
         return;
     }
 
-    currentRoom.ws = ws;
+    try {
+        currentRoom.ws = ws;
+        currentRoom.printClients();
+    }
+    catch(err) {
+        console.log(`Error connecting to the room! Error:${err}`);
+    }
 
     ws.on('message', function (message : any) {
         console.log(`Received message ${message} from user ${roomId}`);
@@ -93,17 +121,6 @@ wss.on('connection', function connection(ws : any, request : any) {
         console.log('Closing connection to websocket.');
         map.delete(roomId);
     });
-    // ws.on('message', function incoming(message) {
-    //     wss.clients.forEach(function each(client) {
-    //         if (client.readyState === 1) {
-    //             client.send("Hey we got a response!");
-    //             console.log("MESSAGE SENT?");
-    //         }
-    //     });
-    // });
-    // ws.on('close', function close() {
-    //     console.log("CLOSING WebSocket Server");
-    // });
 });
 
 console.log("started the websocket server");

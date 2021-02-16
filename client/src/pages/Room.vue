@@ -6,6 +6,14 @@
     <button v-on:click="joinRoom">Join Room!</button>
     <button v-on:click="pauseVideo">Pause Video!</button>
     <div>Room ID = {{ $route.params.roomId }}</div>
+    <div>
+      List of users:
+        <li v-for="(client, index) in clients" :key="index">
+          UserName: {{ client }}
+        </li>
+          <!-- {{ client }}
+        </li> -->
+    </div>
   </div>
 </template>
 
@@ -19,6 +27,7 @@ export default {
       connection: null,
       username: "",
       roomId: "",
+      clients: [],
     }
   },
   methods: {
@@ -56,8 +65,21 @@ export default {
         conn.send({ username: this.username });
       };
 
-      this.connection.onmessage = function message(data) {
-        console.log(`message got: ${data}`);
+      this.connection.onmessage = function message(message) {
+        console.log('Recieved a message from Websocket Server:');
+        let data;
+        try {
+          data = JSON.parse(message.data);
+          console.log(data);
+          if (data.actionType) {
+            if (data.actionType == 'roomConnect') {
+              this.clients = data.clients;
+              console.log(this.clients);
+            }
+          }
+        } catch (err) {
+          console.log(`Error parsing websocket messageevent: ${err}`);
+        }
       };
     },
   },

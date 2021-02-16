@@ -2,11 +2,18 @@ import ProgressionType = require('./ProgressionType');
 
 class Room {
     ws: Object | undefined;
-    clients: Object[] | undefined;
-    
+    clients: Object[];
     mediaQueue: Object[] | undefined;
 
     constructor() {
+        this.clients = [];
+        this.mediaQueue = [];
+    }
+
+    printClients() {
+        this.clients.forEach(element => {
+            console.log(`Client Name: ${element}`);
+        });
     }
 
     navigateToNextSong(progression: ProgressionType, isLooping: boolean) {
