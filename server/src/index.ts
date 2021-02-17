@@ -118,9 +118,8 @@ wss.on('connection', function connection(ws : any, request : any) {
             let data = JSON.parse(message);
             if (data.actionType) {
                 console.log("Parsing current room action!");
-                currentRoom.parseAction(data.actionType);
+                currentRoom.parseAction(data);
             }
-            ws.send(message);
         } catch (err) {
             console.log(`Error parsing the message from the client: ${err}`);
         }

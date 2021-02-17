@@ -14,6 +14,9 @@
           <!-- {{ client }}
         </li> -->
     </div>
+    <input v-model="urlCandidate" placeholder="URL">
+    <button v-on:click="addVideo">Play Video!</button>
+    <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe>
   </div>
 </template>
 
@@ -28,6 +31,8 @@ export default {
       username: "",
       roomId: "",
       clients: [],
+      urlCandidate: "",
+      currentVideo: "",
     }
   },
   methods: {
@@ -36,8 +41,19 @@ export default {
         this.connection.send('PAUSE!!!');
     },
     pauseVideo : function () {
-      console.log(this.connection.readyState);
+      console.log("PAUSING VIDEO");
       // this.connection.send('PAUSE!!!');
+      // document.getElementById("player").contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
+      let frame = document.getElementById("player");
+      let playerState = frame.contentWindow.postMessage(
+        '{"event":"command","func":"getPlayerState","args":""}',
+        '*'
+      );
+      alert(playerState);
+      frame.contentWindow.postMessage(
+        '{"event":"command","func":"pauseVideo","args":""}',
+        '*');
+
       this.connection.send(JSON.stringify({
             actionType: 'ToggleVideo', 
       }));
@@ -58,6 +74,12 @@ export default {
           .then(response => {
             this.buildWebSocketConnection();
       });
+    },
+    addVideo: function () {
+      this.connection.send(JSON.stringify({
+            actionType: 'PlayYoutubeVideo',
+            url: this.urlCandidate 
+      }));
     },
     buildWebSocketConnection: function () {
       let conn = new WebSocket('ws://localhost:8080');
@@ -87,6 +109,9 @@ export default {
             if (data.actionType == 'roomConnect') {
               // add the last added client to the list of added clients
               vm.clients.push(data.clients.pop());
+            }
+            if (data.actionType === 'PlayYoutubeVideo') {
+              vm.currentVideo = data.url;
             }
           }
         } catch (err) {

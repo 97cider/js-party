@@ -24,9 +24,15 @@ class Room {
         console.log('Pausing the current room song?');
     }
 
+    playYoutubeVideo(url : string)
+    {
+        this.ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: url }));
+    }
+
     // Takes in an action type defined by the 
     // messageevent returned from the websocket server
-    parseAction(actionType : string) {
+    parseAction(action : any) {
+        let actionType = action.actionType;
         console.log(`PARSING: ${actionType}`);
         switch(actionType) {
             case 'PauseVideo': {
@@ -35,10 +41,16 @@ class Room {
             case 'ResumeVideo': {
 
             }
+            case 'PlayYoutubeVideo': {
+                if (!action.url) {
+                    return;
+                }
+                this.playYoutubeVideo(action.url);
+            }
             case 'ToggleVideo': {
                 console.log("HEY WE ARE TOGGLING THE VIDEO!");
                 this.mediaState = !this.mediaState;
-                this.ws.send('HEY WE TOGGLED THE VIDEO FOR THESE SPECIFIC USERSSS');
+                this.ws.send(JSON.stringify({ message: 'WOAHHHHH WE PAUSED A VIDEO'}));
             }
             default: {
 
