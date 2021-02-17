@@ -4,12 +4,14 @@ const webSocket = require('ws');
 
 class Room {
     ws: any | undefined;
+    wss: Object[];
     clients: Object[];
     mediaQueue: Object[] | undefined;
     mediaState: boolean;
 
     constructor() {
         this.clients = [];
+        this.wss = [];
         this.mediaQueue = [];
         this.mediaState = true;
     }
@@ -26,7 +28,9 @@ class Room {
 
     playYoutubeVideo(url : string)
     {
+        this.wss.forEach((ws : any) => {
         this.ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: url }));
+        });
     }
 
     // Takes in an action type defined by the 
@@ -42,6 +46,7 @@ class Room {
 
             }
             case 'PlayYoutubeVideo': {
+                console.log("YOOO WE ARE PLAYING A VIDEO!!");
                 if (!action.url) {
                     return;
                 }
@@ -50,10 +55,13 @@ class Room {
             case 'ToggleVideo': {
                 console.log("HEY WE ARE TOGGLING THE VIDEO!");
                 this.mediaState = !this.mediaState;
-                this.ws.send(JSON.stringify({ message: 'WOAHHHHH WE PAUSED A VIDEO'}));
+                this.wss.forEach((ws : any) => {
+                    ws.send(JSON.stringify({ actionType: 'ToggleVideo', state: this.mediaState }));
+                });
+                
             }
             default: {
-
+                console.log("could not parse room action string!");
             }
         }
     }

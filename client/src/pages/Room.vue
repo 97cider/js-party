@@ -16,7 +16,8 @@
     </div>
     <input v-model="urlCandidate" placeholder="URL">
     <button v-on:click="addVideo">Play Video!</button>
-    <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe>
+    <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
+    <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
   </div>
 </template>
 
@@ -33,6 +34,14 @@ export default {
       clients: [],
       urlCandidate: "",
       currentVideo: "",
+      playerOptions: {
+        autoplay: 1
+      }
+    }
+  },
+  computed: {
+    player() {
+      return this.$refs.youtube.player;
     }
   },
   methods: {
@@ -40,23 +49,37 @@ export default {
       console.log(this.connection.readyState);
         this.connection.send('PAUSE!!!');
     },
-    pauseVideo : function () {
-      console.log("PAUSING VIDEO");
+    pauseVideo : async function() {
       // this.connection.send('PAUSE!!!');
       // document.getElementById("player").contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-      let frame = document.getElementById("player");
-      let playerState = frame.contentWindow.postMessage(
-        '{"event":"command","func":"getPlayerState","args":""}',
-        '*'
-      );
-      alert(playerState);
-      frame.contentWindow.postMessage(
-        '{"event":"command","func":"pauseVideo","args":""}',
-        '*');
+      // let frame = document.getElementById("player");
+      // let playerState = frame.contentWindow.postMessage(
+      //   '{"event":"command","func":"getPlayerState","args":""}',
+      //   '*'
+      // );
+      // alert(playerState);
+      // frame.contentWindow.postMessage(
+      //   '{"event":"command","func":"pauseVideo","args":""}',
+      //   '*');
+      let playerState = this.player.getPlayerState();
+      if (playerState === 2) {
+        await this.player.playVideo();  
+      }
+      else if (playerState === 1) {
+        await this.player.pauseVideo();
+      }
 
       this.connection.send(JSON.stringify({
-            actionType: 'ToggleVideo', 
+            actionType: 'ToggleVideo',
+            state: playerState,
       }));
+    },
+    toggleVideoState: async function (mediaState) {
+      if(mediaState) {
+        await this.player.pauseVideo();
+        return;
+      }
+      await this.player.playVideo();
     },
     joinRoom: function () {
       let id = this.roomId;
@@ -76,9 +99,10 @@ export default {
       });
     },
     addVideo: function () {
+      console.log("ADDING A VIDEO!");
       this.connection.send(JSON.stringify({
             actionType: 'PlayYoutubeVideo',
-            url: this.urlCandidate 
+            url: this.urlCandidate
       }));
     },
     buildWebSocketConnection: function () {
@@ -89,13 +113,13 @@ export default {
 
       this.connection.onopen = function open() {
         // Send the user back to the webserver
-        conn.send({ username: this.username });
-        console.log(`Opening connection: ${this.username}`);
+        conn.send({ username: vm.username });
+        console.log(`Opening connection: ${vm.username}`);
 
         if (vm.clients.length == 0 || vm.clients === undefined) {
           // Add the newly connected client to the list of clients
-          console.log(`Added new user ${this.username}`);
-          vm.clients.push(this.username);
+          console.log(`Added new user ${vm.username}`);
+          vm.clients.push(vm.username);
         }
       };
 
@@ -109,9 +133,15 @@ export default {
             if (data.actionType == 'roomConnect') {
               // add the last added client to the list of added clients
               vm.clients.push(data.clients.pop());
+              return;
             }
             if (data.actionType === 'PlayYoutubeVideo') {
               vm.currentVideo = data.url;
+              return;
+            }
+            if (data.actionType === 'ToggleVideo') {
+              vm.toggleVideoState(data.state);
+              return;
             }
           }
         } catch (err) {

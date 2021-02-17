@@ -76,7 +76,7 @@ app.post('/joinRoom', function(req : any, res : any) {
 });
 
 const server = http.createServer(app);
-const wss = new webSocket.Server({ clientTracking: false, noServer: true });
+const wss = new webSocket.Server({ noServer: true });
 
 server.on('upgrade', function (request : any, socket : any, head : any) {
     sessionParser(request, {}, () => {
@@ -105,7 +105,10 @@ wss.on('connection', function connection(ws : any, request : any) {
     }
 
     try {
-        currentRoom.ws = ws;
+        if (!currentRoom.ws) {
+            currentRoom.ws = ws;
+        }
+        currentRoom.wss = wss.clients;
         currentRoom.printClients();
     }
     catch(err) {

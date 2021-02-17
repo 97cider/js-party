@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import VueYoutube from 'vue-youtube';
 
 import Intro from './pages/Intro.vue';
 import Room from './pages/Room.vue';
@@ -9,6 +10,7 @@ import App from './App.vue';
 import './scss/style.scss';
 
 Vue.use(VueRouter);
+Vue.use(VueYoutube);
 
 Vue.config.productionTip = false;
 
