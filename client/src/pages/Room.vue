@@ -5,6 +5,7 @@
     <p>Your Username is: {{ username }}</p>
     <button v-on:click="joinRoom">Join Room!</button>
     <button v-on:click="pauseVideo">Pause Video!</button>
+    <button v-on:click="setVideoTimeDev">Set Time Test!</button>
     <div>Room ID = {{ $route.params.roomId }}</div>
     <div>
       List of users:
@@ -50,17 +51,6 @@ export default {
         this.connection.send('PAUSE!!!');
     },
     pauseVideo : async function() {
-      // this.connection.send('PAUSE!!!');
-      // document.getElementById("player").contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-      // let frame = document.getElementById("player");
-      // let playerState = frame.contentWindow.postMessage(
-      //   '{"event":"command","func":"getPlayerState","args":""}',
-      //   '*'
-      // );
-      // alert(playerState);
-      // frame.contentWindow.postMessage(
-      //   '{"event":"command","func":"pauseVideo","args":""}',
-      //   '*');
       let playerState = this.player.getPlayerState();
       if (playerState === 2) {
         await this.player.playVideo();  
@@ -80,6 +70,10 @@ export default {
         return;
       }
       await this.player.playVideo();
+    },
+    getVideoTime: async function () {
+      let time = await this.player.getCurrentTime();
+      this.connection.send(JSON.stringify({ actionType: 'SyncVideo', time: time }));
     },
     joinRoom: function () {
       let id = this.roomId;
@@ -104,6 +98,15 @@ export default {
             actionType: 'PlayYoutubeVideo',
             url: this.urlCandidate
       }));
+    },
+    setVideoTime: async function (time) {
+      let playerState = this.player.getPlayerState();
+      await this.player.playVideo();
+      console.log("Hey we are going to a specific time");
+      await this.player.seekTo(time, true);
+    },
+    setVideoTimeDev: async function () {
+      await this.player.seekTo(30, true);
     },
     buildWebSocketConnection: function () {
       let conn = new WebSocket('ws://localhost:8080');
@@ -142,6 +145,17 @@ export default {
             if (data.actionType === 'ToggleVideo') {
               vm.toggleVideoState(data.state);
               return;
+            }
+            if (data.actionType === 'GetVideoTime') {
+              vm.getVideoTime();
+            }
+            if (data.actionType === 'VideoSync') {
+              console.log("YOOOO WE GOT A SYNC MESSAGE!");
+              if(vm.currentVideo != data.url)
+              {
+                vm.currentVideo = data.url;
+              }
+              vm.setVideoTime(data.time);
             }
           }
         } catch (err) {

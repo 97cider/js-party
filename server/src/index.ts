@@ -22,6 +22,9 @@ const app = express();
 // map of room to roomids
 const map = new Map();
 
+const server = http.createServer(app);
+let wss = new webSocket.Server({ noServer: true });
+
 app.use(sessionParser);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -39,6 +42,30 @@ app.post('/room', function(req : any, res : any) {
     console.log("GENERATING ROOM");
 
     let room = new Room();
+    room.wss = new webSocket.Server({ noServer: true }); 
+
+    room.wss.on('connection', function connection(ws : any, request : any) {
+        ws.on('message', function (message : any) {
+            console.log(`Received message ${message} from user ${roomId}`);
+            try {
+                let data = JSON.parse(message);
+                if (data.actionType) {
+                    console.log("Parsing current room action!");
+                    room.parseAction(data);
+                }
+            } catch (err) {
+                console.log(`Error parsing the message from the client: ${err}`);
+            }
+          });
+    
+        ws.on('close', function (message : any) {
+            console.log('Closing connection to websocket.');
+            // remove the client from the room, if the room has no clients, 
+            // setup a cron job to remove the websocket connection after 24 hours
+            // map.delete(roomId);
+        });
+    });    
+
     map.set(roomId, room);
 
     req.session.roomId = req.body.roomId;
@@ -62,21 +89,27 @@ app.post('/joinRoom', function(req : any, res : any) {
     req.session.roomId = req.body.roomId;
     room.clients.push(userName);
 
-    if (room.ws) {
+    // TODO: Refactor Generated Room Logic
+    if (room.activeUrl != "") {
         // the room already exists, send a signal letting the other users
         // know that another user has connected
         console.log("HEY THIS ROOM IS ALREADY CREATED! LETS SEND SOME CALLBACKS");
-        room.ws.send(JSON.stringify({
-            actionType: 'roomConnect', 
-            clients: room.clients
-        }));
+        // room.ws.send(JSON.stringify({
+        //     actionType: 'roomConnect', 
+        //     clients: room.clients
+        // }));
+        room.wss.forEach((ws : any) => {
+            ws.send(JSON.stringify({
+                actionType: 'roomConnect', 
+                clients: room.clients
+            }));
+        });
+        console.log("Begin Video Sync");
+        room.BeginVideoSync();
     }
     
     res.send({ result: 'OK', message:'Joined a room!' });
 });
-
-const server = http.createServer(app);
-const wss = new webSocket.Server({ noServer: true });
 
 server.on('upgrade', function (request : any, socket : any, head : any) {
     sessionParser(request, {}, () => {
@@ -87,54 +120,11 @@ server.on('upgrade', function (request : any, socket : any, head : any) {
             return;
         }
 
-        wss.handleUpgrade(request, socket, head, function (ws : any) {
-            wss.emit('connection', ws, request);
+        let room = map.get(request.session.roomId);
+        room.wss.handleUpgrade(request, socket, head, function (ws : any) {
+            room.wss.emit('connection', ws, request);
         });
     });
 });
-
-wss.on('connection', function connection(ws : any, request : any) {
-    const roomId = request.session.roomId;
-
-    //map.set(roomId, ws);
-    let currentRoom = map.get(roomId);
-    if(!currentRoom) {
-        // tried connecting to a nonexistant room
-        console.log('Room does not exists! Can not connect')
-        return;
-    }
-
-    try {
-        if (!currentRoom.ws) {
-            currentRoom.ws = ws;
-        }
-        currentRoom.wss = wss.clients;
-        currentRoom.printClients();
-    }
-    catch(err) {
-        console.log(`Error connecting to the room! Error:${err}`);
-    }
-
-    ws.on('message', function (message : any) {
-        console.log(`Received message ${message} from user ${roomId}`);
-        try {
-            let data = JSON.parse(message);
-            if (data.actionType) {
-                console.log("Parsing current room action!");
-                currentRoom.parseAction(data);
-            }
-        } catch (err) {
-            console.log(`Error parsing the message from the client: ${err}`);
-        }
-      });
-
-    ws.on('close', function (message : any) {
-        console.log('Closing connection to websocket.');
-        // remove the client from the room, if the room has no clients, 
-        // setup a cron job to remove the websocket connection after 24 hours
-        // map.delete(roomId);
-    });
-});
-
-console.log("started the websocket server");
+console.log(`Started the js-party server on port ${port}`);
 server.listen(port);

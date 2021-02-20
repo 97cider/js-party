@@ -7,12 +7,13 @@
     "start": "node index.ts",
     "build": "tsc -p .",
     "start-ts": "ts-node src/index.ts",
-    "rebuild": "npm run build && npm run start-ts", 
+    "rebuild": "npm run build && npm run start-ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/ws": "^7.4.0",
     "bluebird": "^3.7.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
