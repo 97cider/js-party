@@ -88,27 +88,34 @@ app.post('/joinRoom', function(req : any, res : any) {
     console.log(`${req.body.username} is joining Room with ID: ${req.body.roomId}`);
     req.session.roomId = req.body.roomId;
     room.clients.push(userName);
+    res.send({ result: 'OK', message:'Joined a room!' });
+});
 
-    // TODO: Refactor Generated Room Logic
-    if (room.activeUrl != "") {
+app.post('/trySync', function(req : any, res : any) {
+    console.log("WE ARE DOING SOME SYNCING");
+    const roomId = req.body.roomId;
+    console.log(roomId);
+    let room = map.get(roomId);
+
+    if (room.activeUrl != undefined) {
         // the room already exists, send a signal letting the other users
         // know that another user has connected
         console.log("HEY THIS ROOM IS ALREADY CREATED! LETS SEND SOME CALLBACKS");
+        console.log(room.activeUrl);
         // room.ws.send(JSON.stringify({
         //     actionType: 'roomConnect', 
         //     clients: room.clients
         // }));
-        room.wss.forEach((ws : any) => {
-            ws.send(JSON.stringify({
-                actionType: 'roomConnect', 
-                clients: room.clients
-            }));
-        });
+        // room.wss.clients.forEach((ws : any) => {
+        //     ws.send(JSON.stringify({
+        //         actionType: 'roomConnect', 
+        //         clients: room.clients
+        //     }));
+        // });
         console.log("Begin Video Sync");
         room.BeginVideoSync();
     }
-    
-    res.send({ result: 'OK', message:'Joined a room!' });
+
 });
 
 server.on('upgrade', function (request : any, socket : any, head : any) {

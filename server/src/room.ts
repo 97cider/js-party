@@ -11,11 +11,14 @@ class Room {
     mediaQueue: Object[] | undefined;
     mediaState: boolean;
     activeUrl: string | undefined;
+    currentTime: number | undefined;
+    timeCandidates: number[];
 
     constructor() {
         this.clients = [];
         this.mediaQueue = [];
         this.mediaState = false;
+        this.timeCandidates = [];
     }
 
     printClients() {
@@ -46,10 +49,17 @@ class Room {
         });
     }
 
+    ComputeSyncTime() {
+        let maxTime = Math.max(...this.timeCandidates);
+        console.log(`Syncing videos with a max time of ${maxTime} from a list of length ${this.timeCandidates.length}`);
+        this.SyncVideos(maxTime);
+    }
+
     SyncVideos(time : number) {
         this.wss.clients.forEach((ws : any) => {
             ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, url: this.activeUrl }));
         });
+        this.timeCandidates = [];
     }
 
     // Takes in an action type defined by the 
@@ -73,8 +83,11 @@ class Room {
         }
         if (actionType === 'SyncVideo') {
             console.log('Got video times through Sync...Sending Messages Back');
-            this.SyncVideos(action.time);
-            return;
+            this.timeCandidates.push(action.time);
+            if(this.timeCandidates.length >= 2) {
+                console.log('...COMPUTING TIME SYNC...');
+                this.ComputeSyncTime();
+            }
         }
     }
 

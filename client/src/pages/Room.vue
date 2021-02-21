@@ -75,7 +75,7 @@ export default {
       let time = await this.player.getCurrentTime();
       this.connection.send(JSON.stringify({ actionType: 'SyncVideo', time: time }));
     },
-    joinRoom: function () {
+    joinRoom: async function () {
       let id = this.roomId;
       let username = this.username;
       console.log(id);
@@ -88,8 +88,15 @@ export default {
             withCredentials: true,
             crossDomain: true,
           })
-          .then(response => {
-            this.buildWebSocketConnection();
+          .then(async response => {
+            await this.buildWebSocketConnection();
+            axios.post('http://localhost:8080/trySync', { roomId: id, username: username },
+            { 
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              crossDomain: true,
+            });
       });
     },
     addVideo: function () {
@@ -100,15 +107,12 @@ export default {
       }));
     },
     setVideoTime: async function (time) {
-      let playerState = this.player.getPlayerState();
-      await this.player.playVideo();
-      console.log("Hey we are going to a specific time");
       await this.player.seekTo(time, true);
     },
     setVideoTimeDev: async function () {
       await this.player.seekTo(30, true);
     },
-    buildWebSocketConnection: function () {
+    buildWebSocketConnection: async function () {
       let conn = new WebSocket('ws://localhost:8080');
       let vm = this;
 
@@ -118,7 +122,6 @@ export default {
         // Send the user back to the webserver
         conn.send({ username: vm.username });
         console.log(`Opening connection: ${vm.username}`);
-
         if (vm.clients.length == 0 || vm.clients === undefined) {
           // Add the newly connected client to the list of clients
           console.log(`Added new user ${vm.username}`);
@@ -126,7 +129,7 @@ export default {
         }
       };
 
-      this.connection.onmessage = function message(message) {
+      this.connection.onmessage = async function message(message) {
         console.log('Recieved a message from Websocket Server:');
         let data;
         try {
@@ -139,7 +142,7 @@ export default {
               return;
             }
             if (data.actionType === 'PlayYoutubeVideo') {
-              vm.currentVideo = data.url;
+              vm.currentVideo = data.url; 
               return;
             }
             if (data.actionType === 'ToggleVideo') {
@@ -151,11 +154,14 @@ export default {
             }
             if (data.actionType === 'VideoSync') {
               console.log("YOOOO WE GOT A SYNC MESSAGE!");
+              vm.playerOptions.start = data.time;
               if(vm.currentVideo != data.url)
               {
                 vm.currentVideo = data.url;
               }
-              vm.setVideoTime(data.time);
+              // this is honestly the lamest shit i have ever had to work around in my entire life
+              // Note: This is a hack, until I decouple the video player, this is gonna stay
+              setTimeout(() => vm.setVideoTime(data.time), 1000);    
             }
           }
         } catch (err) {
