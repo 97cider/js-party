@@ -14,6 +14,8 @@ class Room {
     currentTime: number | undefined;
     timeCandidates: number[];
     queueIndex: number;
+    isLooping: boolean | undefined;
+    progressionType: ProgressionType;
 
     constructor() {
         this.clients = [];
@@ -21,6 +23,7 @@ class Room {
         this.mediaState = false;
         this.timeCandidates = [];
         this.queueIndex = 0;
+        this.progressionType = ProgressionType.Linear;
     }
 
     printClients() {
@@ -99,6 +102,7 @@ class Room {
         if (actionType === 'ModifyRoomSettings')
         {
             // hey they modified the room settings
+            this.modifyRoomConfiguration(action.options);
         }
         if (actionType === 'AddSongToQueue') 
         {
@@ -119,6 +123,23 @@ class Room {
 
         console.log("Hey a song ended!");
         this.playYoutubeVideo(this.mediaQueue[this.queueIndex]);
+    }
+
+    modifyRoomConfiguration(options : any) {
+        console.log('Hey we modified the room settings');
+        let progression : keyof typeof ProgressionType = options.progressionType;
+
+        this.progressionType = ProgressionType[progression];
+        this.isLooping = options.isLooping;
+
+        console.log(`New Room Settings: isLooping ${this.isLooping} ProgressionType: ${this.progressionType}`)
+
+        this.wss.clients.forEach((ws : any) => {
+            ws.send(JSON.stringify({ actionType: 'ModifyRoomSettings', options: {
+                progressionType: this.progressionType,
+                isLooping: this.isLooping
+            }}));
+        });
     }
 }
 

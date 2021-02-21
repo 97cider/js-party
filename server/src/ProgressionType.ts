@@ -1,5 +1,5 @@
 enum ProgressionType {
-    fullyRandom,
+    FullyRandom,
     BiasedRandom,
     Linear
 }
