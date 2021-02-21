@@ -20,6 +20,13 @@
 
     <input v-model="queueCandidate" placeholder="Add Video To Queue">
     <button v-on:click="addVideoToQueue">Add Video To Queue!</button>
+
+    <input type="checkbox" id="checkbox" v-on:change="toggleLooping" v-model="isLooping">
+    <label for="checkbox">Loop Playlist: {{ isLooping }}</label>
+
+    <button v-on:click="enableShuffle" :disabled="progressionType == 'FullyRandom'">Shuffle</button>
+    <button v-on:click="enableBiasedShuffle" :disabled="progressionType == 'BiasedRandom'">BiasedShuffle</button>
+
     <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
     <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
   </div>
@@ -41,7 +48,9 @@ export default {
       currentVideo: "",
       playerOptions: {
         autoplay: 1
-      }
+      },
+      progressionType: "Linear",
+      isLooping: false
     }
   },
   computed: {
@@ -173,6 +182,11 @@ export default {
               // Note: This is a hack, until I decouple the video player, this is gonna stay
               setTimeout(() => vm.setVideoTime(data.time), 1000);    
             }
+            if (data.actionType === 'ModifyRoomSettings') {
+              console.log("YO WE UPDATED SOME ROOM SETTINGS");
+              vm.isLooping = data.options.isLooping;
+              vm.progressionType = data.options.progressionType;
+            }
           }
         } catch (err) {
           console.log(`Error parsing websocket messageevent: ${err}`);
@@ -187,6 +201,36 @@ export default {
         }));
       }
     },
+    enableShuffle () {
+      this.progressionType = 'FullyRandom';
+      this.connection.send(JSON.stringify({
+        actionType: 'ModifyRoomSettings',
+        options: {
+          isLooping: this.isLooping,
+          progressionType: this.progressionType
+        }
+      }));
+    },
+    enableBiasedShuffle () {
+      this.progressionType = 'BiasedRandom';
+      this.connection.send(JSON.stringify({
+        actionType: 'ModifyRoomSettings',
+        options: {
+          isLooping: this.isLooping,
+          progressionType: this.progressionType
+        }
+      }));
+    },
+    toggleLooping () {
+      //this.isLooping != this.isLooping;
+      this.connection.send(JSON.stringify({
+        actionType: 'ModifyRoomSettings',
+        options: {
+          isLooping: this.isLooping,
+          progressionType: this.progressionType
+        }
+      }));
+    }
   },
   mounted () {
     this.roomId = this.$route.params.roomId;
