@@ -31,14 +31,21 @@
 
     <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
     <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
+
+    <MediaPlayer @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import MediaPlayer from '../components/MediaPlayer.vue';
 
 export default {
+  components: { MediaPlayer },
   name: 'ROOM',
+  components: {
+    MediaPlayer
+  },
   data: function() {
     return {
       connection: null,
@@ -48,16 +55,8 @@ export default {
       urlCandidate: "",
       queueCandidate: "",
       currentVideo: "",
-      playerOptions: {
-        autoplay: 1
-      },
       progressionType: "Linear",
       isLooping: false
-    }
-  },
-  computed: {
-    player() {
-      return this.$refs.youtube.player;
     }
   },
   methods: {
@@ -66,28 +65,16 @@ export default {
         this.connection.send('PAUSE!!!');
     },
     pauseVideo : async function() {
-      let playerState = this.player.getPlayerState();
-      if (playerState === 2) {
-        await this.player.playVideo();  
-      }
-      else if (playerState === 1) {
-        await this.player.pauseVideo();
-      }
-
       this.connection.send(JSON.stringify({
             actionType: 'ToggleVideo',
             state: playerState,
       }));
     },
     toggleVideoState: async function (mediaState) {
-      if(mediaState) {
-        await this.player.pauseVideo();
-        return;
-      }
-      await this.player.playVideo();
+      await this.$refs.mediaPlayer.toggleMediaState(mediaState)
     },
     getVideoTime: async function () {
-      let time = await this.player.getCurrentTime();
+      let time = await this.$refs.mediaPlayer.getMediaTime();
       this.connection.send(JSON.stringify({ actionType: 'SyncVideo', time: time }));
     },
     joinRoom: async function () {
@@ -128,10 +115,10 @@ export default {
       }));
     },
     setVideoTime: async function (time) {
-      await this.player.seekTo(time, true);
+      await this.$refs.mediaPlayer.setMediaTime(time);
     },
     setVideoTimeDev: async function () {
-      await this.player.seekTo(30, true);
+      await this.$refs.mediaPlayer.setMediaTime(30);
     },
     buildWebSocketConnection: async function () {
       let conn = new WebSocket('ws://localhost:8080');
@@ -163,7 +150,7 @@ export default {
               return;
             }
             if (data.actionType === 'PlayYoutubeVideo') {
-              vm.currentVideo = data.url; 
+              vm.$refs.mediaPlayer.setMedia(data.url);
               return;
             }
             if (data.actionType === 'ToggleVideo') {
@@ -174,18 +161,12 @@ export default {
               vm.getVideoTime();
             }
             if (data.actionType === 'VideoSync') {
-              console.log("YOOOO WE GOT A SYNC MESSAGE!");
-              vm.playerOptions.start = data.time;
-              if(vm.currentVideo != data.url)
-              {
-                vm.currentVideo = data.url;
-              }
+              vm.$refs.mediaPlayer.setMedia(data.url);
               // this is honestly the lamest shit i have ever had to work around in my entire life
               // Note: This is a hack, until I decouple the video player, this is gonna stay
-              setTimeout(() => vm.setVideoTime(data.time), 1000);    
+              setTimeout(() => vm.$refs.mediaPlayer.setMediaTime(data.time), 1000);    
             }
             if (data.actionType === 'ModifyRoomSettings') {
-              console.log("YO WE UPDATED SOME ROOM SETTINGS");
               vm.isLooping = data.options.isLooping;
               vm.progressionType = data.options.progressionType;
             }
@@ -200,13 +181,10 @@ export default {
           actionType: 'EndVideo'
         }));
     },
-    youtubePlayerStateChange (youtubeState) {
-      if (youtubeState.data === 0) {
-        console.log("HEY THE VIDEO ENDED, QUEUE UP A NEXT ONE!");
-        this.connection.send(JSON.stringify({
-          actionType: 'EndVideo'
-        }));
-      }
+    endVideo() {
+      this.connection.send(JSON.stringify({
+        actionType: 'EndVideo'
+      }));
     },
     enableShuffle () {
       this.progressionType = 'FullyRandom';
@@ -241,7 +219,6 @@ export default {
   },
   mounted () {
     this.roomId = this.$route.params.roomId;
-    this.player.addEventListener('onStateChange', this.youtubePlayerStateChange);
   }
 }
 </script>
