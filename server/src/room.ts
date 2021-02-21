@@ -9,6 +9,7 @@ class Room {
     wss: any | undefined;
     clients: Object[];
     mediaQueue: string[];
+    biasedMediaQueue: string[];
     mediaState: boolean;
     activeUrl: string | undefined;
     currentTime: number | undefined;
@@ -24,6 +25,7 @@ class Room {
         this.timeCandidates = [];
         this.queueIndex = 0;
         this.progressionType = ProgressionType.Linear;
+        this.biasedMediaQueue = this.mediaQueue;
     }
 
     printClients() {
@@ -69,6 +71,7 @@ class Room {
 
     AddVideoUrlToQueue(url : string) {
         this.mediaQueue.push(url);
+        this.biasedMediaQueue.push(url);
         // TODO: eventual callbacks for adding a video to a queue
     }
 
@@ -113,14 +116,25 @@ class Room {
         }
     }
 
-    navigateToNextSong(progression?: ProgressionType, isLooping?: boolean) {
+    navigateToNextSong() {
+        console.log(`PROGRESSION TYPE THROUGH ENUM ${ProgressionType[this.progressionType]}`);
         // navigate to the next song depending on the progression type of the room
-        
-        //basic progression (linearlly)
-        this.queueIndex++;
-
-        //todo: more advanced progression
-
+        if (this.progressionType == ProgressionType.BiasedRandom) {
+            console.log("LOADING VIDEO WITH BIASED RANDOM PROGRESSION");
+            this.biasedMediaQueue.splice(this.queueIndex, 1);
+            this.queueIndex = Math.floor(Math.random() * this.biasedMediaQueue.length);
+            this.playYoutubeVideo(this.biasedMediaQueue[this.queueIndex]);
+            return;
+        }
+        if (this.progressionType == ProgressionType.FullyRandom) {
+            console.log("LOADING VIDEO WITH FULLY RANDOM PROGRESSION");
+            this.queueIndex = Math.floor(Math.random() * this.mediaQueue.length);
+        }
+        else {
+            //basic progression (linearlly)
+            console.log("LOADING VIDEO WITH LINEAR PROGRESSION");
+            this.queueIndex++;
+        }
         console.log("Hey a song ended!");
         this.playYoutubeVideo(this.mediaQueue[this.queueIndex]);
     }
@@ -132,7 +146,7 @@ class Room {
         this.progressionType = ProgressionType[progression];
         this.isLooping = options.isLooping;
 
-        console.log(`New Room Settings: isLooping ${this.isLooping} ProgressionType: ${this.progressionType}`)
+        console.log(`New Room Settings: isLooping ${this.isLooping} ProgressionType: ${this.progressionType} from a key ${progression} and value ${options.progressionType}`)
 
         this.wss.clients.forEach((ws : any) => {
             ws.send(JSON.stringify({ actionType: 'ModifyRoomSettings', options: {

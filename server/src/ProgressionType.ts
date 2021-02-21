@@ -1,7 +1,7 @@
 enum ProgressionType {
-    FullyRandom,
-    BiasedRandom,
-    Linear
+    FullyRandom = 'FullyRandom',
+    BiasedRandom = 'BiasedRandom',
+    Linear = 'Linear'
 }
 
 export = ProgressionType;
