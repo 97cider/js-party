@@ -17,6 +17,9 @@
     </div>
     <input v-model="urlCandidate" placeholder="URL">
     <button v-on:click="addVideo">Play Video!</button>
+
+    <input v-model="queueCandidate" placeholder="Add Video To Queue">
+    <button v-on:click="addVideoToQueue">Add Video To Queue!</button>
     <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
     <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
   </div>
@@ -34,6 +37,7 @@ export default {
       roomId: "",
       clients: [],
       urlCandidate: "",
+      queueCandidate: "",
       currentVideo: "",
       playerOptions: {
         autoplay: 1
@@ -106,6 +110,12 @@ export default {
             url: this.urlCandidate
       }));
     },
+    addVideoToQueue: function() {
+      this.connection.send(JSON.stringify({
+        actionType: 'AddSongToQueue',
+        url: this.queueCandidate
+      }));
+    },
     setVideoTime: async function (time) {
       await this.player.seekTo(time, true);
     },
@@ -169,9 +179,18 @@ export default {
         }
       };
     },
+    youtubePlayerStateChange (youtubeState) {
+      if (youtubeState.data === 0) {
+        console.log("HEY THE VIDEO ENDED, QUEUE UP A NEXT ONE!");
+        this.connection.send(JSON.stringify({
+          actionType: 'EndVideo'
+        }));
+      }
+    },
   },
   mounted () {
     this.roomId = this.$route.params.roomId;
+    this.player.addEventListener('onStateChange', this.youtubePlayerStateChange);
   }
 }
 </script>

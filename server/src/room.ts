@@ -8,17 +8,19 @@ class Room {
     ws: any | undefined;
     wss: any | undefined;
     clients: Object[];
-    mediaQueue: Object[] | undefined;
+    mediaQueue: string[];
     mediaState: boolean;
     activeUrl: string | undefined;
     currentTime: number | undefined;
     timeCandidates: number[];
+    queueIndex: number;
 
     constructor() {
         this.clients = [];
         this.mediaQueue = [];
         this.mediaState = false;
         this.timeCandidates = [];
+        this.queueIndex = 0;
     }
 
     printClients() {
@@ -62,6 +64,11 @@ class Room {
         this.timeCandidates = [];
     }
 
+    AddVideoUrlToQueue(url : string) {
+        this.mediaQueue.push(url);
+        // TODO: eventual callbacks for adding a video to a queue
+    }
+
     // Takes in an action type defined by the 
     // messageevent returned from the websocket server
     parseAction(action : any) {
@@ -89,11 +96,29 @@ class Room {
                 this.ComputeSyncTime();
             }
         }
+        if (actionType === 'ModifyRoomSettings')
+        {
+            // hey they modified the room settings
+        }
+        if (actionType === 'AddSongToQueue') 
+        {
+            this.AddVideoUrlToQueue(action.url);
+        }
+        if (actionType === 'EndVideo') {
+            this.navigateToNextSong();
+        }
     }
 
-    navigateToNextSong(progression: ProgressionType, isLooping: boolean) {
+    navigateToNextSong(progression?: ProgressionType, isLooping?: boolean) {
         // navigate to the next song depending on the progression type of the room
+        
+        //basic progression (linearlly)
+        this.queueIndex++;
+
+        //todo: more advanced progression
+
         console.log("Hey a song ended!");
+        this.playYoutubeVideo(this.mediaQueue[this.queueIndex]);
     }
 }
 
