@@ -25,7 +25,7 @@ class Room {
         this.timeCandidates = [];
         this.queueIndex = 0;
         this.progressionType = ProgressionType.Linear;
-        this.biasedMediaQueue = this.mediaQueue;
+        this.biasedMediaQueue = [];
     }
 
     printClients() {
@@ -34,8 +34,13 @@ class Room {
         });
     }
 
-    pauseSong(message : any) {
+    toggleVideoState() {
         console.log('Pausing the current room song?');
+        this.mediaState = !this.mediaState;
+        this.wss.clients.forEach((ws : any) => {
+            console.log('HEY WE ARE SENDING THE TOGGLE BACK TO THE CLIENT');
+            ws.send(JSON.stringify({ actionType: 'ToggleVideo', state: this.mediaState }));
+        });
     }
 
     playYoutubeVideo(url : string)
@@ -87,11 +92,7 @@ class Room {
         }
         if (actionType === 'ToggleVideo') {
             console.log(`HEY WE ARE TOGGLING THE VIDEO! ${actionType}`);
-            this.mediaState = !this.mediaState;
-            this.wss.clients.forEach((ws : any) => {
-                console.log('HEY WE ARE SENDING THE TOGGLE BACK TO THE CLIENT');
-                ws.send(JSON.stringify({ actionType: 'ToggleVideo', state: this.mediaState }));
-            });
+            this.toggleVideoState();
             return;
         }
         if (actionType === 'SyncVideo') {
@@ -133,7 +134,21 @@ class Room {
         else {
             //basic progression (linearlly)
             console.log("LOADING VIDEO WITH LINEAR PROGRESSION");
-            this.queueIndex++;
+            if (this.activeUrl == this.mediaQueue[this.queueIndex]) {
+                this.queueIndex++;
+            }
+            console.log(this.queueIndex);
+            console.log(this.mediaQueue.length);
+        }
+        
+        // reset the queue index
+        if (this.queueIndex >= this.mediaQueue.length) {
+            if (this.isLooping) {
+                this.queueIndex = 0;
+            }
+            else {
+                return;
+            }
         }
         console.log("Hey a song ended!");
         this.playYoutubeVideo(this.mediaQueue[this.queueIndex]);

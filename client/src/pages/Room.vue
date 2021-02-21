@@ -27,6 +27,8 @@
     <button v-on:click="enableShuffle" :disabled="progressionType == 'FullyRandom'">Shuffle</button>
     <button v-on:click="enableBiasedShuffle" :disabled="progressionType == 'BiasedRandom'">BiasedShuffle</button>
 
+    <button v-on:click="skipVideo">></button>
+
     <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
     <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
   </div>
@@ -192,6 +194,11 @@ export default {
           console.log(`Error parsing websocket messageevent: ${err}`);
         }
       };
+    },
+    skipVideo () {
+        this.connection.send(JSON.stringify({
+          actionType: 'EndVideo'
+        }));
     },
     youtubePlayerStateChange (youtubeState) {
       if (youtubeState.data === 0) {
