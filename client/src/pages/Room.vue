@@ -29,7 +29,7 @@
 
     <button v-on:click="skipVideo">></button>
 
-    <MediaPlayer @onVideoEnd="endVideo" ref="mediaPlayer"/>
+    <MediaPlayer videoId="900163114" @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>
 
