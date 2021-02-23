@@ -1,7 +1,9 @@
 <template>
   <div id="mediaPlayer">
-    <youtube video-id="iXfUkdoyL4E" :player-vars="youtubePlayerOptions" ref="youtube" />
-    <div v-if="!isYoutubeVideo">
+    <div v-show="isYoutubeVideo">
+      <youtube :video-id="videoId" :player-vars="youtubePlayerOptions" ref="youtube" />
+    </div>
+    <div v-show="!isYoutubeVideo">
       <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
     </div>
   </div>
@@ -19,8 +21,7 @@ export default {
       youtubePlayerOptions: {
         autoplay: 1
       },
-      currentVideo: "900163114",
-      soundCloudWidget,
+      currentVideo: "",
       soundcloud: null,
     }
   },
@@ -52,13 +53,11 @@ export default {
     },
 
     // DEPRECATED: USE VIDEOID and VIDEOTYPE PROP INSTEAD
-    setMedia: function (media) {
-        console.log(`Playing url ${media} from outside the component`);
-        //this.currentVideo = media;
+    setMedia: function () {
+      if (!this.soundcloud) {
         let iframe = this.$refs.soundcloud;
         this.soundcloud = SC.Widget(iframe.id);
-        // this.soundcloud.load(media, {});
-        this.currentVideo = media;
+      }
     },
     youtubePlayerStateChange (youtubeState) {
       if (youtubeState.data === 0) {
@@ -78,8 +77,6 @@ export default {
     let soundCloudWidgetScript = document.createElement('script');
     soundCloudWidgetScript.setAttribute('src', 'https://w.soundcloud.com/player/api.js');
     document.head.appendChild(soundCloudWidgetScript);
-    let iframe = this.$refs.soundcloud;
-    this.soundcloud = SC.Widget(iframe.id);
   }
 }
 </script>

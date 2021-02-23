@@ -154,7 +154,7 @@ export default {
               return;
             }
             if (data.actionType === 'PlayYoutubeVideo') {
-              //vm.$refs.mediaPlayer.setMedia(data.url);
+              vm.$refs.mediaPlayer.setMedia();
               vm.currentVideo = data.url;
               return;
             }
