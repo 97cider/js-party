@@ -1,9 +1,6 @@
 <template>
   <div id="mediaPlayer">
     <youtube :video-id="currentVideo" :player-vars="youtubePlayerOptions" ref="youtube" />
-    <div>
-      {{parsedMessage}}
-    </div>
     <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
   </div>
 </template>
@@ -33,9 +30,6 @@ export default {
     },
     soundCloudUrl() {
       return `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/${this.videoId}&amp;auto_play=true`;
-    },
-    parsedMessage() {
-      return this.videoId + 'what';
     }
   },
   methods: {
