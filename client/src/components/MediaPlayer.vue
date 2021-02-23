@@ -1,6 +1,6 @@
 <template>
   <div id="mediaPlayer">
-    <div v-show="isYoutubeVideo">
+    <div v-show="!isYoutubeVideo">
       <youtube :video-id="videoId" :player-vars="youtubePlayerOptions" ref="youtube" />
     </div>
     <div v-show="!isYoutubeVideo">
