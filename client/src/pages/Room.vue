@@ -29,7 +29,11 @@
 
     <button v-on:click="skipVideo">></button>
 
-    <MediaPlayer videoId="900163114" @onVideoEnd="endVideo" ref="mediaPlayer"/>
+    <div>
+      WOAH THIS IS THE CURRENT VIDEO: {{currentVideo}}
+    </div>
+
+    <MediaPlayer :videoId="currentVideo" :mediaType="currentMediaType" @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>
 
@@ -52,6 +56,8 @@ export default {
       urlCandidate: "",
       queueCandidate: "",
       currentVideo: "",
+      playerState: false,
+      currentMediaType: "YouTube",
       progressionType: "Linear",
       isLooping: false
     }
@@ -62,9 +68,10 @@ export default {
         this.connection.send('PAUSE!!!');
     },
     pauseVideo : async function() {
+      console.log("PAUSING THE VIDEO");
       this.connection.send(JSON.stringify({
             actionType: 'ToggleVideo',
-            state: playerState,
+            state: this.playerState,
       }));
     },
     toggleVideoState: async function (mediaState) {
@@ -147,11 +154,13 @@ export default {
               return;
             }
             if (data.actionType === 'PlayYoutubeVideo') {
-              vm.$refs.mediaPlayer.setMedia(data.url);
+              //vm.$refs.mediaPlayer.setMedia(data.url);
+              vm.currentVideo = data.url;
               return;
             }
             if (data.actionType === 'ToggleVideo') {
               vm.toggleVideoState(data.state);
+              this.playerState = data.state;
               return;
             }
             if (data.actionType === 'GetVideoTime') {

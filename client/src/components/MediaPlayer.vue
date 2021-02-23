@@ -1,7 +1,9 @@
 <template>
   <div id="mediaPlayer">
-    <youtube :video-id="currentVideo" :player-vars="youtubePlayerOptions" ref="youtube" />
-    <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
+    <youtube video-id="iXfUkdoyL4E" :player-vars="youtubePlayerOptions" ref="youtube" />
+    <div v-if="!isYoutubeVideo">
+      <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
+    </div>
   </div>
 </template>
 
@@ -19,9 +21,7 @@ export default {
       },
       currentVideo: "900163114",
       soundCloudWidget,
-      soundCloudSongUrl: "900163114",
       soundcloud: null,
-      message: 'Hello'
     }
   },
   computed: {
@@ -30,23 +30,12 @@ export default {
     },
     soundCloudUrl() {
       return `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/${this.videoId}&amp;auto_play=true`;
+    },
+    isYoutubeVideo() {
+      return true;
     }
   },
   methods: {
-    pauseMedia : async function() {
-      let playerState = this.player.getPlayerState();
-      if (playerState === 2) {
-        await this.player.playVideo();  
-      }
-      else if (playerState === 1) {
-        await this.player.pauseVideo();
-      }
-
-      this.connection.send(JSON.stringify({
-            actionType: 'ToggleVideo',
-            state: playerState,
-      }));
-    },
     toggleMediaState: async function (mediaState) {
       if(mediaState) {
         await this.player.pauseVideo();
@@ -81,10 +70,16 @@ export default {
     
   },
   mounted () {
+
+    // Add Youtube State Change to Detect End of Video
     this.player.addEventListener('onStateChange', this.youtubePlayerStateChange);
+
+    // Add soundcloud widget API script
     let soundCloudWidgetScript = document.createElement('script');
     soundCloudWidgetScript.setAttribute('src', 'https://w.soundcloud.com/player/api.js');
     document.head.appendChild(soundCloudWidgetScript);
+    let iframe = this.$refs.soundcloud;
+    this.soundcloud = SC.Widget(iframe.id);
   }
 }
 </script>
