@@ -3,6 +3,7 @@
     <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
     YOOOO THIS IS A MEDIA COMPONENT
     <youtube :video-id="currentVideo" :player-vars="youtubePlayerOptions" ref="youtube" />
+    <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="auto_play" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293"></iframe>
   </div>
 </template>
 
@@ -14,7 +15,9 @@ export default {
       youtubePlayerOptions: {
         autoplay: 1
       },
-      currentVideo: ""
+      currentVideo: "",
+      soundCloudWidget,
+      soundcloud: null,
     }
   },
   computed: {
@@ -52,8 +55,13 @@ export default {
       await this.player.seekTo(time, true);
     },
     setMedia: function (media) {
-        console.log(`Playing url ${media} from outside the component`)
-        this.currentVideo = media;
+        console.log(`Playing url ${media} from outside the component`);
+        //this.currentVideo = media;
+        let iframe = this.$refs.soundcloud;
+        this.soundcloud = SC.Widget(iframe.id);
+        alert(this.soundcloud);
+        this.soundcloud.load(media, {});
+        this.soundcloud.play();
         console.log(this.currentVideo);
     },
     youtubePlayerStateChange (youtubeState) {
@@ -62,8 +70,14 @@ export default {
       }
     },
   },
+  created () {
+    
+  },
   mounted () {
     this.player.addEventListener('onStateChange', this.youtubePlayerStateChange);
+    let soundCloudWidgetScript = document.createElement('script');
+    soundCloudWidgetScript.setAttribute('src', 'https://w.soundcloud.com/player/api.js');
+    document.head.appendChild(soundCloudWidgetScript);
   }
 }
 </script>

@@ -29,9 +29,6 @@
 
     <button v-on:click="skipVideo">></button>
 
-    <!-- <iframe id="player" width='560' height='315' :src="currentVideo" frameborder='0' allow='autoplay'></iframe> -->
-    <youtube :video-id="currentVideo" :player-vars="playerOptions" ref="youtube" />
-
     <MediaPlayer @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>

@@ -11,6 +11,7 @@
     "axios": ">=0.21.1",
     "bootstrap": "^4.5.0",
     "core-js": "^3.6.5",
+    "soundcloud": "^3.3.2",
     "three": "^0.119.1",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
