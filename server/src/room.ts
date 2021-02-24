@@ -3,6 +3,7 @@ import { reduceEachTrailingCommentRange } from 'typescript';
 import ProgressionType = require('./ProgressionType');
 
 const webSocket = require('ws');
+const { parseUrl, getIdFromYoutubeUrl } = require('./utils/typeParser');
 
 class Room {
     ws: any | undefined;
@@ -45,6 +46,15 @@ class Room {
 
     playYoutubeVideo(url : string)
     {
+        let urlType = parseUrl(url);
+        let updatedUrl;
+        if (urlType == 'youtube') {
+            console.log('Hey a youtube video!');
+            updatedUrl = getIdFromYoutubeUrl(url);
+        }
+        else {
+            console.log('Not a youtube video!');
+        }
         this.activeUrl = url;
         console.log(`Set the active URL to ${url}`);
         this.wss.clients.forEach((ws : any) => {

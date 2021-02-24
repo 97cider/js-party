@@ -102,16 +102,6 @@ app.post('/trySync', function(req : any, res : any) {
         // know that another user has connected
         console.log("HEY THIS ROOM IS ALREADY CREATED! LETS SEND SOME CALLBACKS");
         console.log(room.activeUrl);
-        // room.ws.send(JSON.stringify({
-        //     actionType: 'roomConnect', 
-        //     clients: room.clients
-        // }));
-        // room.wss.clients.forEach((ws : any) => {
-        //     ws.send(JSON.stringify({
-        //         actionType: 'roomConnect', 
-        //         clients: room.clients
-        //     }));
-        // });
         console.log("Begin Video Sync");
         room.BeginVideoSync();
     }
