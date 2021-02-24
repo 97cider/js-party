@@ -3,7 +3,7 @@ import { reduceEachTrailingCommentRange } from 'typescript';
 import ProgressionType = require('./ProgressionType');
 
 const webSocket = require('ws');
-const { parseUrl, getIdFromYoutubeUrl } = require('./utils/typeParser');
+const { TypeUtils } = require('./utils/typeParser');
 
 class Room {
     ws: any | undefined;
@@ -46,11 +46,12 @@ class Room {
 
     playYoutubeVideo(url : string)
     {
-        let urlType = parseUrl(url);
+        let urlType = TypeUtils.parseUrl(url);
         let updatedUrl;
+        console.log(`Determined the URL type: ${urlType}`);
         if (urlType == 'youtube') {
             console.log('Hey a youtube video!');
-            updatedUrl = getIdFromYoutubeUrl(url);
+            updatedUrl = TypeUtils.getIdFromYoutubeUrl(url);
         }
         else {
             console.log('Not a youtube video!');

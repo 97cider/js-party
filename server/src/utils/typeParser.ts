@@ -2,42 +2,41 @@
 // Prefixes and mappings can be found in consts.js
 // Should 
 
-const { YoutubePrefixes, SoundCloudPrefixes } = require('./consts');
+const { Constants } = require('./consts');
 
-let mappings = [YoutubePrefixes, SoundCloudPrefixes];
+const mappings = [Constants.YoutubePrefixes, Constants.SoundCloudPrefixes];
 
-const parseUrl = (url : string) => {
-    console.log(YoutubePrefixes);
-    mappings.forEach(prefixType => {
-        console.log(prefixType);
-        prefixType.prefixes.array.forEach((prefix : string) => {
-            if (url.includes(prefix)) {
-                return prefixType.type;
-            }
+export class TypeUtils {
+    parseUrl(url : string) : string {
+        let type = "";
+        mappings.forEach(prefixType => {
+            prefixType.prefixes.forEach((prefix : string) => {
+                if (url.includes(prefix)) {
+                    console.log(`Found Corresponding Type: ${prefixType.type}`);
+                    type = prefixType.type;
+                    return type;
+                }
+            });
         });
-    });
-}
-
-const getIdFromYoutubeUrl = (url : string) => {
-    // this is probably gonna be a little bit messy, as youtube videos can unfortunately have a bunch of formats
-    const shorthandUrl = 'youtu.be';
-    const normalUrl = 'youtube.com';
-    // shortened 
-    if (url.includes(shorthandUrl)) {
-        let idPos = url.indexOf(`${shorthandUrl}/`);
-        return url.substring(idPos, url.length);
+        return type;
     }
-    if (url.includes(normalUrl)) {
-        let idPos = url.indexOf(`v=`);
-        let endPos = url.indexOf('&');
-        if (!endPos) {
+    getIdFromYoutubeUrl(url : string) : string {
+        // this is probably gonna be a little bit messy, as youtube videos can unfortunately have a bunch of formats
+        const shorthandUrl = 'youtu.be';
+        const normalUrl = 'youtube.com';
+        // shortened 
+        if (url.includes(shorthandUrl)) {
+            let idPos = url.indexOf(`${shorthandUrl}/`);
             return url.substring(idPos, url.length);
         }
-        return url.substring(idPos, endPos);
+        if (url.includes(normalUrl)) {
+            let idPos = url.indexOf(`v=`);
+            let endPos = url.indexOf('&');
+            if (!endPos) {
+                return url.substring(idPos, url.length);
+            }
+            return url.substring(idPos, endPos);
+        }
+        return "";
     }
 }
-
-module.exports = {
-    parseUrl,
-    getIdFromYoutubeUrl
-};
