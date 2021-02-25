@@ -7,7 +7,7 @@ const { Constants } = require('./consts');
 const mappings = [Constants.YoutubePrefixes, Constants.SoundCloudPrefixes];
 
 export class TypeUtils {
-    parseUrl(url : string) : string {
+    static parseUrl(url : string) : string {
         let type = "";
         mappings.forEach(prefixType => {
             prefixType.prefixes.forEach((prefix : string) => {
@@ -20,13 +20,16 @@ export class TypeUtils {
         });
         return type;
     }
-    getIdFromYoutubeUrl(url : string) : string {
+    static getIdFromYoutubeUrl(url : string) : string {
         // this is probably gonna be a little bit messy, as youtube videos can unfortunately have a bunch of formats
         const shorthandUrl = 'youtu.be';
         const normalUrl = 'youtube.com';
         // shortened 
         if (url.includes(shorthandUrl)) {
-            let idPos = url.indexOf(`${shorthandUrl}/`);
+            console.log(`Found url with shorthand: ${shorthandUrl}`);
+            let shortHand = shorthandUrl + '/';
+            let idPos = url.indexOf(shortHand);
+            console.log(`${shorthandUrl}/ has returned an index of ${idPos}`);
             return url.substring(idPos, url.length);
         }
         if (url.includes(normalUrl)) {

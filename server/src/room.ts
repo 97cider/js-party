@@ -47,7 +47,7 @@ class Room {
     playYoutubeVideo(url : string)
     {
         let urlType = TypeUtils.parseUrl(url);
-        let updatedUrl;
+        let updatedUrl = url;
         console.log(`Determined the URL type: ${urlType}`);
         if (urlType == 'youtube') {
             console.log('Hey a youtube video!');
@@ -56,10 +56,10 @@ class Room {
         else {
             console.log('Not a youtube video!');
         }
-        this.activeUrl = url;
-        console.log(`Set the active URL to ${url}`);
+        this.activeUrl = updatedUrl;
+        console.log(`Set the active URL to ${updatedUrl}`);
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: url }));
+            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: updatedUrl }));
         });
     }
 
