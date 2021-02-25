@@ -3,7 +3,7 @@
     <div v-show="!isYoutubeVideo">
       <youtube :video-id="videoId" :player-vars="youtubePlayerOptions" ref="youtube" />
     </div>
-    <div v-show="!isYoutubeVideo">
+    <div>
       <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
     </div>
   </div>
@@ -30,7 +30,7 @@ export default {
       return this.$refs.youtube.player;
     },
     soundCloudUrl() {
-      return `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/${this.videoId}&amp;auto_play=true`;
+      return `https://w.soundcloud.com/player/?url=${this.videoId}&amp;auto_play=true`;
     },
     isYoutubeVideo() {
       return true;
