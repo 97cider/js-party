@@ -30,15 +30,15 @@ export class TypeUtils {
             let shortHand = shorthandUrl + '/';
             let idPos = url.indexOf(shortHand);
             console.log(`${shorthandUrl}/ has returned an index of ${idPos}`);
-            return url.substring(idPos, url.length);
+            return url.substring(idPos + (shorthandUrl.length + 1), url.length);
         }
         if (url.includes(normalUrl)) {
             let idPos = url.indexOf(`v=`);
             let endPos = url.indexOf('&');
             if (!endPos) {
-                return url.substring(idPos, url.length);
+                return url.substring(idPos+2, url.length);
             }
-            return url.substring(idPos, endPos);
+            return url.substring(idPos+2, endPos);
         }
         return "";
     }
