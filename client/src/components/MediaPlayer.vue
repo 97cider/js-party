@@ -1,9 +1,9 @@
 <template>
   <div id="mediaPlayer">
-    <div v-show="!isYoutubeVideo">
-      <youtube :video-id="videoId" :player-vars="youtubePlayerOptions" ref="youtube" />
+    <div v-show="isYoutubeVideo">
+      <youtube :video-id="youtubeUrl" :player-vars="youtubePlayerOptions" ref="youtube" />
     </div>
-    <div>
+    <div v-show="!isYoutubeVideo">
       <iframe id="soundcloudPlayer" ref="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" :src="soundCloudUrl"></iframe>
     </div>
   </div>
@@ -30,10 +30,22 @@ export default {
       return this.$refs.youtube.player;
     },
     soundCloudUrl() {
-      return `https://w.soundcloud.com/player/?url=${this.videoId}&amp;auto_play=true`;
+      if (this.mediaType === 'soundcloud') {
+        return `https://w.soundcloud.com/player/?url=${this.videoId}&amp;auto_play=true`;
+      }
+      return '';
+    },
+    youtubeUrl() {
+      if (this.mediaType === 'youtube') {
+        return this.videoId;
+      }
+      return '';
     },
     isYoutubeVideo() {
-      return true;
+      if(this.mediaType === 'youtube') {
+        return true;
+      }
+      return false;
     }
   },
   methods: {

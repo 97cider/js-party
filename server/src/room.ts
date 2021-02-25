@@ -13,6 +13,7 @@ class Room {
     biasedMediaQueue: string[];
     mediaState: boolean;
     activeUrl: string | undefined;
+    mediaType: string | undefined;
     currentTime: number | undefined;
     timeCandidates: number[];
     queueIndex: number;
@@ -57,9 +58,10 @@ class Room {
             console.log('Not a youtube video!');
         }
         this.activeUrl = updatedUrl;
+        this.mediaType = urlType;
         console.log(`Set the active URL to ${updatedUrl}`);
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: updatedUrl }));
+            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: updatedUrl, type: this.mediaType }));
         });
     }
 
@@ -80,7 +82,7 @@ class Room {
 
     SyncVideos(time : number) {
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, url: this.activeUrl }));
+            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, url: this.activeUrl, type: this.mediaType }));
         });
         this.timeCandidates = [];
     }

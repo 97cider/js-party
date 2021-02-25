@@ -57,7 +57,7 @@ export default {
       queueCandidate: "",
       currentVideo: "",
       playerState: false,
-      currentMediaType: "YouTube",
+      currentMediaType: "youtube",
       progressionType: "Linear",
       isLooping: false
     }
@@ -156,6 +156,7 @@ export default {
             if (data.actionType === 'PlayYoutubeVideo') {
               vm.$refs.mediaPlayer.setMedia();
               vm.currentVideo = data.url;
+              vm.currentMediaType = data.type;
               return;
             }
             if (data.actionType === 'ToggleVideo') {
