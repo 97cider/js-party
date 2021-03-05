@@ -12,9 +12,12 @@
           <div class="header-item">
             <img class="icon-right" alt="lt" src="public/svgs/icon-right.svg">
           </div>
+          <div class="header-item alligned">
+            <SearchBar/>
+          </div>
           <div class="header-item-right">
             <div v-on:click="hideHeaderBar">
-              <img class="button-icon" alt="^" src="public/svgs/expand-icon.svg">
+              <img class="button-icon hoverable" alt="^" src="public/svgs/expand-icon.svg">
             </div>
           </div>
         </div>
@@ -33,8 +36,13 @@
 </template>
 
 <script>
+import SearchBar from './SearchBar.vue';
+
 export default {
   name: 'Header',
+  components: {
+    SearchBar
+  },
   data: function() {
     return {
       isMinimized: false,
@@ -45,9 +53,11 @@ export default {
   methods: {
     hideHeaderBar: function () {
       this.isMinimized = true;
+      this.refreshIdleTimer();
     },
     showHeaderBar: function () {
       this.isMinimized = false;
+      this.refreshIdleTimer();
     },
     refreshIdleTimer: function () {
       this.currentIdleTime = 0;
@@ -81,6 +91,14 @@ export default {
         width: 100vw;
     }
 
+    .header-item {
+      &.alligned {
+        display: flex;
+        align-items: center;
+        width: 30%;
+      }
+    }
+
     .header-item-right {
       margin-left: auto;
       margin-right: 20px;
@@ -107,6 +125,10 @@ export default {
       background: rgb(240, 84, 84);
       border-radius: 0px 0px 10px 10px;
       padding: 10px 3px 0px 3px;
+       &:hover {
+         background: rgb(190, 106, 116);
+         box-shadow: inset 0 -2px 5px rgba(0,0,0,.33);
+       }
     }
 
     .minimized-header {

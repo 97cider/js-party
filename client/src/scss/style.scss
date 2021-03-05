@@ -22,6 +22,12 @@ body {
     &.inverted {
         transform: scaleY(-1.0);
     }
+
+    &.hoverable {
+        &:hover {
+            opacity: 0.5;
+        }
+    }
 }
 
 .pop-slide-enter-active {
