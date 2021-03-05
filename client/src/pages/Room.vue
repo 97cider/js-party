@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Header/>
     Welcome to the new room!
     <input v-model="username" placeholder="UserName">
     <p>Your Username is: {{ username }}</p>
@@ -40,12 +41,14 @@
 <script>
 import axios from 'axios';
 import MediaPlayer from '../components/MediaPlayer.vue';
+import Header from '../components/HeaderBar.vue';
 
 export default {
   components: { MediaPlayer },
   name: 'ROOM',
   components: {
-    MediaPlayer
+    MediaPlayer,
+    Header,
   },
   data: function() {
     return {
@@ -234,6 +237,6 @@ export default {
 
 <style lang="scss" scoped>
 #app {
-  background-color: tomato;
+  background-color: rgb(34, 40, 49);
 }
 </style>>

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    poggers
+    Welcome To .JsParty! A place where you can listen to music with friends. Right now only YouTube is supported, but I am working on adding Soundcloud Support!
     <button v-on:click="createRoom">Create Room</button>
   </div>
 </template>
