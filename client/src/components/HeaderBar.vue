@@ -21,7 +21,7 @@
       </transition>
     </div>
     <transition name="pop-slide">
-      <div v-show="isMinimized" class="minimized-header">
+      <div v-show="isMinimized && !isIdle" class="minimized-header">
         <div class="header-item-top-right">
           <div class="header-expand-content" v-on:click="showHeaderBar">
             <img class="button-icon inverted" alt="^" src="public/svgs/expand-icon.svg">
@@ -38,6 +38,8 @@ export default {
   data: function() {
     return {
       isMinimized: false,
+      currentIdleTime: 0,
+      isIdle: false,
     }
   },
   methods: {
@@ -46,7 +48,27 @@ export default {
     },
     showHeaderBar: function () {
       this.isMinimized = false;
+    },
+    refreshIdleTimer: function () {
+      this.currentIdleTime = 0;
+      this.isIdle = false;
+    },
+    icrementIdleTimer: function () {
+      this.currentIdleTime += 1;
+      if (this.currentIdleTime > 10) {
+        this.isIdle = true;
+      }
+    },
+    updateIdleTime: function () {
+      let vm = this;
+      setInterval(() => {
+        vm.icrementIdleTimer();
+      }, 100)
     }
+  },
+  mounted: function () {
+    window.addEventListener('mousemove',this.refreshIdleTimer);
+    this.updateIdleTime();
   }
 }
 </script>
