@@ -42,9 +42,10 @@ export default {
 
 <style lang="scss" scoped>
     .header-container {
-        background: rgb(48, 71, 94);
+        // background: rgb(48, 71, 94);
         position: relative;
-
+        background: url(../../public/svgs/header-bg.svg);
+        background-repeat: repeat;
         width: 100vw;
         box-shadow: inset 0 -2px 5px rgba(0,0,0,.33);
     }
