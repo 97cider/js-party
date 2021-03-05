@@ -8,6 +8,9 @@
         <div class="header-item">
           <img class="logo" alt="lantern-party" src="public/svgs/LaternPartyLogo.svg">
         </div>
+        <div class="header-item">
+          <img class="icon-right" alt="lt" src="public/svgs/icon-right.svg">
+        </div>
         <div class="header-item-right">
           <button v-on:click="hideHeaderBar">V</button>
         </div>
@@ -47,6 +50,7 @@ export default {
         background: url(../../public/svgs/header-bg.svg);
         background-repeat: repeat;
         width: 100vw;
+        height: 60px;
         box-shadow: inset 0 -2px 5px rgba(0,0,0,.33);
     }
 
@@ -64,11 +68,12 @@ export default {
 
     .header-content {
         display: flex;
+        height: 100%;
     }
 
     .minimized-header {
       display: flex;
-      height: 63.5px;
+      height: 60px;
     }
 
     .logo {
@@ -79,5 +84,10 @@ export default {
     .icon {
       height: 60px;
       width: 60px;
+    }
+
+    .icon-right {
+      height: 60px;
+      width: 180px;
     }
 </style>
