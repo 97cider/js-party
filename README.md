@@ -1,4 +1,4 @@
-![alt text](https://github.com/97Cider/js-party/blob/main/public/svgs/LanternPartyLogo.jpg?raw=true)
+![alt text](https://github.com/97cider/js-party/tree/main/client/public/svgs/LanternPartyLogo.jpg?raw=true)
 
 # Lantern Party
 Lantern Party is a website made for sharing and syncing music with friends. Currently users can sync and share YouTube and SoundCloud music.
