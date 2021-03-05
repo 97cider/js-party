@@ -14,3 +14,22 @@ body {
     min-height: 100vh;
     height: 100vh;
 }
+
+.button-icon {
+    width: 30px;
+    height: 30px;
+
+    &.inverted {
+        transform: scaleY(-1.0);
+    }
+}
+
+.pop-slide-enter-active {
+    transition: all .3s;
+}
+.pop-slide-leave-active {
+    transition: all .1s;
+}
+.pop-slide-enter, .pop-slide-leave-to {
+    transform: translatey(-30px);
+}
