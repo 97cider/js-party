@@ -1,10 +1,13 @@
 <template>
   <div id="app">
     <Header/>
-    Welcome to the new room!
-    <input v-model="username" placeholder="UserName">
-    <p>Your Username is: {{ username }}</p>
-    <button v-on:click="joinRoom">Join Room!</button>
+    <!-- Welcome to the new room!
+    <input v-model="username" placeholder="UserName"> -->
+    <!-- <p>Your Username is: {{ username }}</p>
+    <button v-on:click="joinRoom">Join Room!</button> -->
+    <div v-show="!username">
+      <JoinPrompt v-on:joinRoom="joinRoom"/>
+    </div>
     <button v-on:click="pauseVideo">Pause Video!</button>
     <button v-on:click="setVideoTimeDev">Set Time Test!</button>
     <div>Room ID = {{ $route.params.roomId }}</div>
@@ -42,6 +45,7 @@
 import axios from 'axios';
 import MediaPlayer from '../components/MediaPlayer.vue';
 import Header from '../components/HeaderBar.vue';
+import JoinPrompt from '../components/JoinPrompt.vue';
 
 export default {
   components: { MediaPlayer },
@@ -49,6 +53,7 @@ export default {
   components: {
     MediaPlayer,
     Header,
+    JoinPrompt,
   },
   data: function() {
     return {
@@ -84,9 +89,9 @@ export default {
       let time = await this.$refs.mediaPlayer.getMediaTime();
       this.connection.send(JSON.stringify({ actionType: 'SyncVideo', time: time }));
     },
-    joinRoom: async function () {
+    joinRoom: async function (name) {
       let id = this.roomId;
-      let username = this.username;
+      let username = name;
       console.log(id);
       axios
           .post('http://localhost:8080/joinRoom', { roomId: id, username: username }, 
