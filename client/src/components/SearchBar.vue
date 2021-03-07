@@ -7,16 +7,19 @@
       <div class="search-item primary">
           <input v-model="urlCandidate" placeholder="Enter a YouTube or SoundCloud url..." class="search-input">
       </div>
+      <div v-show="!isEmpty" v-on:click="clearUrlCandidate" v-on:mouseover="clearImageSrc = activeClearImage" v-on:mouseout="clearImageSrc = defaultClearImage" class="search-item secondary clear">
+          <img class="button-icon" alt="?" :src="clearImageSrc">
+      </div>
     </div>
     <div class="search-button-group">
       <transition name="slide">
         <div  v-show="!isEmpty" class="search-button-overlay">
-          <div v-on:click="playUrl" class="search-button">
-            <img class="button-icon inverted" alt=">" src="public/svgs/icon-play.svg">
+          <div v-on:click="playUrl" v-on:mouseover="playImageSrc = activePlayImage" v-on:mouseout="playImageSrc = defaultPlayImage" class="search-button">
+            <img class="button-icon" alt="+" :src="playImageSrc">
           </div>
           <div class="search-divider"></div>
-          <div v-on:click="addToQueue" class="search-button">
-            <img class="button-icon" alt="+" src="public/svgs/icon-add.svg">
+          <div v-on:click="addToQueue" v-on:mouseover="addImageSrc = activeAddImage" v-on:mouseout="addImageSrc = defaultAddImage" class="search-button">
+            <img class="button-icon" alt="+" :src="addImageSrc">
           </div>
         </div>
       </transition>
@@ -25,11 +28,29 @@
 </template>
 
 <script>
+import PlayImage from '../../public/svgs/icon-play.svg';
+import ActivePlayImage from '../../public/svgs/icon-play-active.svg';
+
+import AddImage from '../../public/svgs/icon-add-def.svg';
+import ActiveAddImage from '../../public/svgs/icon-add.svg';
+
+import ClearImage from '../../public/svgs/icon-clear.svg';
+import ActiveClearImage from '../../public/svgs/icon-clear-active.svg';
+
 export default {
   name: 'SearchBar',
   data: function() {
       return {
           urlCandidate: "",
+          playImageSrc: PlayImage,
+          defaultPlayImage: PlayImage,
+          activePlayImage: ActivePlayImage,
+          addImageSrc: AddImage,
+          defaultAddImage: AddImage,
+          activeAddImage: ActiveAddImage,
+          clearImageSrc: ClearImage,
+          defaultClearImage: ClearImage,
+          activeClearImage: ActiveClearImage,
       }
   },
   computed: {
@@ -43,6 +64,9 @@ export default {
       },
       addToQueue() {
         this.$emit('addToQueue', this.urlCandidate);
+      },
+      clearUrlCandidate() {
+          this.urlCandidate = "";
       }
   }
 }
@@ -63,6 +87,11 @@ export default {
 
         &.secondary {
             padding-top: 2px;
+        }
+
+        &.clear {
+            padding-right: 10px;
+            cursor: pointer;
         }
     }
 
