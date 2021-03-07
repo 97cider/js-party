@@ -85,7 +85,7 @@ class Room {
 
     SyncVideos(time : number) {
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, song: this.activeMedia, type: this.mediaType }));
+            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, media: this.activeMedia, type: this.mediaType }));
         });
         this.timeCandidates = [];
     }

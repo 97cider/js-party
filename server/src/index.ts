@@ -103,11 +103,11 @@ app.post('/trySync', function(req : any, res : any) {
     console.log(roomId);
     let room = map.get(roomId);
 
-    if (room.activeUrl != undefined) {
+    if (room.activeMedia != undefined) {
         // the room already exists, send a signal letting the other users
         // know that another user has connected
         console.log("HEY THIS ROOM IS ALREADY CREATED! LETS SEND SOME CALLBACKS");
-        console.log(room.activeUrl);
+        console.log(room.activeMedia);
         console.log("Begin Video Sync");
         room.BeginVideoSync();
     }

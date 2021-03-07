@@ -194,9 +194,10 @@ export default {
               vm.getVideoTime();
             }
             if (data.actionType === 'VideoSync') {
-              vm.$refs.mediaPlayer.setMedia(data.url);
-              vm.currentVideo = data.url;
-              vm.currentMediaType = data.type;
+              console.log('Yo we got a video sync response');
+              vm.$refs.mediaPlayer.setMedia();
+              vm.currentVideo = data.media.url;
+              vm.currentMediaType = data.media.mediaType;
               // this is honestly the lamest shit i have ever had to work around in my entire life
               // Note: This is a hack, until I decouple the video player, this is gonna stay
               setTimeout(() => vm.$refs.mediaPlayer.setMediaTime(data.time), 1000);    
