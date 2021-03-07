@@ -1,7 +1,7 @@
 enum MediaType {
-    Youtube,
-    SoundCloud,
-    Spotify
+    youtube = 'youtube',
+    soundcloud = 'soundcloud',
+    spotify = 'spotify'
 }
 
 export = MediaType;

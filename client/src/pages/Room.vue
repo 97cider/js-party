@@ -181,8 +181,8 @@ export default {
             }
             if (data.actionType === 'PlayYoutubeVideo') {
               vm.$refs.mediaPlayer.setMedia();
-              vm.currentVideo = data.url;
-              vm.currentMediaType = data.type;
+              vm.currentVideo = data.media.url;
+              vm.currentMediaType = data.media.mediaType;
               return;
             }
             if (data.actionType === 'ToggleVideo') {

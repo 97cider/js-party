@@ -1,19 +1,22 @@
 import { Console } from 'console';
 import { reduceEachTrailingCommentRange } from 'typescript';
+import { Media } from './Media';
+import MediaType = require('./MediaType');
 import ProgressionType = require('./ProgressionType');
 
 const webSocket = require('ws');
 const { TypeUtils } = require('./utils/typeParser');
+const { SongInformation } = require('./utils/songInformation');
 
 class Room {
     ws: any | undefined;
     wss: any | undefined;
     clients: Object[];
-    mediaQueue: string[];
-    biasedMediaQueue: string[];
+    mediaQueue: Media[];
+    biasedMediaQueue: Media[];
     mediaState: boolean;
-    activeUrl: string | undefined;
-    mediaType: string | undefined;
+    activeMedia: Media | undefined;
+    mediaType: MediaType | undefined;
     currentTime: number | undefined;
     timeCandidates: number[];
     queueIndex: number;
@@ -45,23 +48,23 @@ class Room {
         });
     }
 
-    playYoutubeVideo(url : string)
+    playYoutubeVideo(song : Media)
     {
-        let urlType = TypeUtils.parseUrl(url);
-        let updatedUrl = url;
-        console.log(`Determined the URL type: ${urlType}`);
-        if (urlType == 'youtube') {
-            console.log('Hey a youtube video!');
-            updatedUrl = TypeUtils.getIdFromYoutubeUrl(url);
-        }
-        else {
-            console.log('Not a youtube video!');
-        }
-        this.activeUrl = updatedUrl;
-        this.mediaType = urlType;
-        console.log(`Set the active URL to ${updatedUrl}`);
+        // let urlType = TypeUtils.parseUrl(url);
+        // let updatedUrl = url;
+        // console.log(`Determined the URL type: ${urlType}`);
+        // if (urlType == 'youtube') {
+        //     console.log('Hey a youtube video!');
+        //     updatedUrl = TypeUtils.getIdFromYoutubeUrl(url);
+        // }
+        // else {
+        //     console.log('Not a youtube video!');
+        // }
+        this.activeMedia = song;
+        this.mediaType = song.mediaType;
+        // console.log(`Set the active URL to ${updatedUrl}`);
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', url: updatedUrl, type: this.mediaType }));
+            ws.send(JSON.stringify({ actionType: 'PlayYoutubeVideo', media: song }));
         });
     }
 
@@ -82,7 +85,7 @@ class Room {
 
     SyncVideos(time : number) {
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, url: this.activeUrl, type: this.mediaType }));
+            ws.send(JSON.stringify({ actionType: 'VideoSync', time: time, song: this.activeMedia, type: this.mediaType }));
         });
         this.timeCandidates = [];
     }
@@ -102,15 +105,44 @@ class Room {
         };
     }
 
-    AddVideoUrlToQueue(url : string) {
+    async AddVideoUrlToQueue(url : string) {
+        
+        // TODO: probably move this into getSongInformation
+        let urlType = TypeUtils.parseUrl(url);
+        let urlId = url;
+        
+        if (urlType == 'youtube') {
+            console.log('Hey a youtube video!');
+            urlId = TypeUtils.getIdFromYoutubeUrl(url);
+        }
+
+        // Builds a media object based on the song id and type
+        let songCandidate = await SongInformation.getSongInformation(urlId, urlType, url);
 
         // TOOD: Expand queue system to limit to specific number of videos
-        this.mediaQueue.push(url);
-        this.biasedMediaQueue.push(url);
+        this.mediaQueue.push(songCandidate);
+        this.biasedMediaQueue.push(songCandidate);
+
         // TODO: eventual callbacks for adding a video to a queue
         this.wss.clients.forEach((ws : any) => {
             ws.send(JSON.stringify({ actionType: 'UpdateQueue', url: url }));
         });
+    }
+
+    async directPlayVideo(url : string) {
+          // TODO: probably move this into getSongInformation
+          let urlType = TypeUtils.parseUrl(url);
+          let urlId = url;
+          
+          if (urlType == 'youtube') {
+              console.log('Hey a youtube video!');
+              urlId = TypeUtils.getIdFromYoutubeUrl(url);
+          }
+  
+          // Builds a media object based on the song id and type
+          let songCandidate = await SongInformation.getSongInformation(urlId, urlType, url);
+
+          this.playYoutubeVideo(songCandidate);
     }
 
     // Takes in an action type defined by the 
@@ -120,7 +152,7 @@ class Room {
 
         if (actionType === 'PlayYoutubeVideo') {
             console.log("YOOO WE ARE PLAYING A VIDEO!!");
-            this.playYoutubeVideo(action.url);
+            this.directPlayVideo(action.url);
             return;
         }
         if (actionType === 'ToggleVideo') {
@@ -167,7 +199,7 @@ class Room {
         else {
             //basic progression (linearlly)
             console.log("LOADING VIDEO WITH LINEAR PROGRESSION");
-            if (this.activeUrl == this.mediaQueue[this.queueIndex]) {
+            if (this.activeMedia == this.mediaQueue[this.queueIndex]) {
                 this.queueIndex++;
             }
             console.log(this.queueIndex);
