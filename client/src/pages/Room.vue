@@ -194,7 +194,6 @@ export default {
               vm.getVideoTime();
             }
             if (data.actionType === 'VideoSync') {
-              console.log('Yo we got a video sync response');
               vm.$refs.mediaPlayer.setMedia();
               vm.currentVideo = data.media.url;
               vm.currentMediaType = data.media.mediaType;
