@@ -26,6 +26,7 @@ body {
     &.hoverable {
         &:hover {
             opacity: 0.5;
+            cursor: pointer;
         }
     }
 }
@@ -39,3 +40,21 @@ body {
 .pop-slide-enter, .pop-slide-leave-to {
     transform: translatey(-30px);
 }
+
+.slide-enter-active {
+    animation: slide-in .2s;
+  }
+.slide-leave-active {
+    animation: slide-in .2s reverse;
+  }
+@keyframes slide-in {
+    0% {
+      transform: scaleX(0);
+    }
+    50% {
+      transform: scaleX(0.5);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }

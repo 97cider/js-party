@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header/>
+    <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue"/>
     <!-- Welcome to the new room!
     <input v-model="username" placeholder="UserName"> -->
     <!-- <p>Your Username is: {{ username }}</p>
@@ -19,8 +19,6 @@
           <!-- {{ client }}
         </li> -->
     </div>
-    <input v-model="urlCandidate" placeholder="URL">
-    <button v-on:click="addVideo">Play Video!</button>
 
     <input v-model="queueCandidate" placeholder="Add Video To Queue">
     <button v-on:click="addVideoToQueue">Add Video To Queue!</button>
@@ -61,7 +59,6 @@ export default {
       username: "",
       roomId: "",
       clients: [],
-      urlCandidate: "",
       queueCandidate: "",
       currentVideo: "",
       playerState: false,
@@ -113,17 +110,17 @@ export default {
             });
       });
     },
-    addVideo: function () {
+    addVideo: function (url) {
       console.log("ADDING A VIDEO!");
       this.connection.send(JSON.stringify({
             actionType: 'PlayYoutubeVideo',
-            url: this.urlCandidate
+            url: url
       }));
     },
-    addVideoToQueue: function() {
+    addVideoToQueue: function(url) {
       this.connection.send(JSON.stringify({
         actionType: 'AddSongToQueue',
-        url: this.queueCandidate
+        url: url
       }));
     },
     setVideoTime: async function (time) {

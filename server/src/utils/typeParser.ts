@@ -35,7 +35,7 @@ export class TypeUtils {
         if (url.includes(normalUrl)) {
             let idPos = url.indexOf(`v=`);
             let endPos = url.indexOf('&');
-            if (!endPos) {
+            if (endPos == -1) {
                 return url.substring(idPos+2, url.length);
             }
             return url.substring(idPos+2, endPos);

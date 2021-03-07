@@ -13,7 +13,7 @@
             <img class="icon-right" alt="lt" src="public/svgs/icon-right.svg">
           </div>
           <div class="header-item alligned">
-            <SearchBar/>
+            <SearchBar  v-on:playUrl="playUrl"  v-on:addToQueue="addToQueue"/>
           </div>
           <div class="header-item-right">
             <div v-on:click="hideHeaderBar">
@@ -74,6 +74,12 @@ export default {
       setInterval(() => {
         vm.icrementIdleTimer();
       }, 100)
+    },
+    playUrl: function (url) {
+      this.$emit('playUrl', url);
+    },
+    addToQueue: function (url) {
+      this.$emit('addToQueue', url);
     }
   },
   mounted: function () {
@@ -125,6 +131,7 @@ export default {
       background: rgb(240, 84, 84);
       border-radius: 0px 0px 10px 10px;
       padding: 10px 3px 0px 3px;
+      cursor: pointer;
        &:hover {
          background: rgb(190, 106, 116);
          box-shadow: inset 0 -2px 5px rgba(0,0,0,.33);

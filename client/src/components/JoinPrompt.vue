@@ -70,7 +70,9 @@ export default {
     .join-input {
         background-color: rgb(48, 71, 94);
         color: rgb(232, 232, 232);
-        border-width: 0px;
+        border-color: rgb(113, 128, 143);
+        border-style: solid;
+        border-width: 2px;
         font-size: 18px;
         margin-top: 10px;
         margin-bottom: 10px;
