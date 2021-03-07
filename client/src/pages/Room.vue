@@ -20,8 +20,12 @@
         </li> -->
     </div>
 
-    <input v-model="queueCandidate" placeholder="Add Video To Queue">
-    <button v-on:click="addVideoToQueue">Add Video To Queue!</button>
+    <div>
+      Current Media Queue:
+        <li v-for="item in this.queueContent" :key="item">
+          <QueueElement songName="Song-Name" :url="item"/>
+        </li>
+    </div>
 
     <input type="checkbox" id="checkbox" v-on:change="toggleLooping" v-model="isLooping">
     <label for="checkbox">Loop Playlist: {{ isLooping }}</label>
@@ -44,6 +48,7 @@ import axios from 'axios';
 import MediaPlayer from '../components/MediaPlayer.vue';
 import Header from '../components/HeaderBar.vue';
 import JoinPrompt from '../components/JoinPrompt.vue';
+import QueueElement from '../components/QueueElement.vue';
 
 export default {
   components: { MediaPlayer },
@@ -52,6 +57,7 @@ export default {
     MediaPlayer,
     Header,
     JoinPrompt,
+    QueueElement
   },
   data: function() {
     return {
@@ -59,7 +65,7 @@ export default {
       username: "",
       roomId: "",
       clients: [],
-      queueCandidate: "",
+      queueContent: [],
       currentVideo: "",
       playerState: false,
       currentMediaType: "youtube",
@@ -100,7 +106,18 @@ export default {
             crossDomain: true,
           })
           .then(async response => {
+
+            // load active configurations from the server
+            if (!response.queue) {
+              this.queueContent = [];
+            }
+            else {
+              this.queueContent = response.queue;
+            }
+
             await this.buildWebSocketConnection();
+
+            // sync the video using aggregate sync
             axios.post('http://localhost:8080/trySync', { roomId: id, username: username },
             { 
               headers: {
@@ -147,6 +164,10 @@ export default {
       };
 
       this.connection.onmessage = async function message(message) {
+
+        //TODO: Convert this into an event emitter instead of having a ton of if statements
+        // I'd rather have a bunch of .on(actionType, function) than 100 if statements lol
+        // Refactor after alpha release
         console.log('Recieved a message from Websocket Server:');
         let data;
         try {
@@ -179,6 +200,9 @@ export default {
               // this is honestly the lamest shit i have ever had to work around in my entire life
               // Note: This is a hack, until I decouple the video player, this is gonna stay
               setTimeout(() => vm.$refs.mediaPlayer.setMediaTime(data.time), 1000);    
+            }
+            if (data.actionType === 'UpdateQueue') {
+              vm.queueContent.push(data.url);
             }
             if (data.actionType === 'ModifyRoomSettings') {
               vm.isLooping = data.options.isLooping;

@@ -87,10 +87,30 @@ class Room {
         this.timeCandidates = [];
     }
 
+    getMediaQueue() {
+        if (!this.mediaQueue) {
+            return [];
+        }
+        console.log(`existing queue found ${this.mediaQueue}`);
+        return this.mediaQueue;
+    }
+
+    getConfig() {
+        return {
+            progressionType: this.progressionType,
+            isLooping: this.isLooping
+        };
+    }
+
     AddVideoUrlToQueue(url : string) {
+
+        // TOOD: Expand queue system to limit to specific number of videos
         this.mediaQueue.push(url);
         this.biasedMediaQueue.push(url);
         // TODO: eventual callbacks for adding a video to a queue
+        this.wss.clients.forEach((ws : any) => {
+            ws.send(JSON.stringify({ actionType: 'UpdateQueue', url: url }));
+        });
     }
 
     // Takes in an action type defined by the 

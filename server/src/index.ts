@@ -88,7 +88,13 @@ app.post('/joinRoom', function(req : any, res : any) {
     console.log(`${req.body.username} is joining Room with ID: ${req.body.roomId}`);
     req.session.roomId = req.body.roomId;
     room.clients.push(userName);
-    res.send({ result: 'OK', message:'Joined a room!' });
+
+    // load room properties and send them to the user
+    let queue = room.getMediaQueue();
+    console.log(`GOT THE QUEUE FROM THE ROOM ${queue}`);
+    let config = room.getConfig();
+
+    res.send({ result: 'OK', message:'Joined a room!', queue: queue });
 });
 
 app.post('/trySync', function(req : any, res : any) {
