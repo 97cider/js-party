@@ -125,7 +125,7 @@ class Room {
 
         // TODO: eventual callbacks for adding a video to a queue
         this.wss.clients.forEach((ws : any) => {
-            ws.send(JSON.stringify({ actionType: 'UpdateQueue', url: url }));
+            ws.send(JSON.stringify({ actionType: 'UpdateQueue', media: songCandidate }));
         });
     }
 

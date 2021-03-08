@@ -94,7 +94,7 @@ app.post('/joinRoom', function(req : any, res : any) {
     console.log(`GOT THE QUEUE FROM THE ROOM ${queue}`);
     let config = room.getConfig();
 
-    res.send({ result: 'OK', message:'Joined a room!', queue: queue });
+    res.send(JSON.stringify({ result: 'OK', message:'Joined a room!', queue: queue }));
 });
 
 app.post('/trySync', function(req : any, res : any) {

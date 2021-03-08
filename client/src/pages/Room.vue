@@ -23,7 +23,7 @@
     <div>
       Current Media Queue:
         <li v-for="item in this.queueContent" :key="item">
-          <QueueElement songName="Song-Name" :url="item"/>
+          <QueueElement :songName="item.title" :url="item.url"/>
         </li>
     </div>
 
@@ -106,14 +106,8 @@ export default {
             crossDomain: true,
           })
           .then(async response => {
-
-            // load active configurations from the server
-            if (!response.queue) {
-              this.queueContent = [];
-            }
-            else {
-              this.queueContent = response.queue;
-            }
+            let data = response.data;
+            this.queueContent = data.queue;
 
             await this.buildWebSocketConnection();
 
@@ -202,7 +196,7 @@ export default {
               setTimeout(() => vm.$refs.mediaPlayer.setMediaTime(data.time), 1000);    
             }
             if (data.actionType === 'UpdateQueue') {
-              vm.queueContent.push(data.url);
+              vm.queueContent.push(data.media);
             }
             if (data.actionType === 'ModifyRoomSettings') {
               vm.isLooping = data.options.isLooping;
