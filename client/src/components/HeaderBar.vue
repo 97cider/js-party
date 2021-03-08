@@ -3,13 +3,16 @@
     <div class="header-container">
       <transition name="pop-slide">
         <div v-show="!isMinimized" class="header-content">
-          <div class="header-item">
+          <div class="header-item desktop">
             <img class="icon" alt="lt" src="public/svgs/icon-left.svg">
           </div>
-          <div class="header-item">
+          <div class="header-item desktop">
             <img class="logo" alt="lantern-party" src="public/svgs/LaternPartyLogo.svg">
           </div>
-          <div class="header-item">
+          <div class="header-item mobile">
+            <img class="logo" alt="lantern-party" src="public/svgs/logo-min.svg">
+          </div>
+          <div class="header-item desktop">
             <img class="icon-right" alt="lt" src="public/svgs/icon-right.svg">
           </div>
           <div class="header-item alligned">
@@ -103,6 +106,12 @@ export default {
         align-items: center;
         width: 30%;
       }
+      &.desktop {
+        display: inherit;
+      }
+      &.mobile {
+        display: none;
+      }
     }
 
     .header-item-right {
@@ -148,6 +157,10 @@ export default {
     .logo {
         height: 35px;
 	      margin: 15px 0px 0px 0px;
+        &.mobile {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
     }
 
     .icon {
@@ -158,5 +171,18 @@ export default {
     .icon-right {
       height: 60px;
       width: 180px;
+    }
+
+    @media only screen and (max-width: 930px) {
+      .header-item {
+        &.desktop {
+          display: none;
+        }
+        &.mobile {
+          display: inherit;
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+      }
     }
 </style>

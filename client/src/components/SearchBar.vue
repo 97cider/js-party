@@ -1,11 +1,14 @@
 <template>
   <div class="search-bar">
     <div v-bind:style="{ 'border-radius': !isEmpty ? '8px 0px 0px 8px' : '8px' }" class="search-content">
-      <div class="search-item secondary">
+      <div class="search-item secondary desktop">
           <img class="button-icon" alt="?" src="public/svgs/SearchIcon.svg">
       </div>
-      <div class="search-item primary">
+      <div class="search-item primary desktop">
           <input v-model="urlCandidate" placeholder="Enter a YouTube or SoundCloud url..." class="search-input">
+      </div>
+      <div class="search-item primary mobile">
+          <input v-model="urlCandidate" placeholder="Enter Url..." class="search-input">
       </div>
       <div v-show="!isEmpty" v-on:click="clearUrlCandidate" v-on:mouseover="clearImageSrc = activeClearImage" v-on:mouseout="clearImageSrc = defaultClearImage" class="search-item secondary clear">
           <img class="button-icon" alt="?" :src="clearImageSrc">
@@ -76,6 +79,7 @@ export default {
     .search-bar {
         width: 100%;
         display: flex;
+        min-width: 300px;
     }
 
     .search-item {
@@ -92,6 +96,10 @@ export default {
         &.clear {
             padding-right: 10px;
             cursor: pointer;
+        }
+
+        &.mobile {
+            display: none;
         }
     }
 
@@ -161,5 +169,26 @@ export default {
     .search-divider {
         width: 3px;
         background-color: rgb(48, 71, 94);
+    }
+
+    @media only screen and (max-width: 530px) {
+        .search-content {
+            width: 40%;
+        }
+        .search-item {
+            padding-left: 10px;
+
+            &.primary {
+                width: 100%;
+            }
+
+            &.mobile {
+                display: initial;
+            }
+
+            &.desktop {
+                display: none;
+            }
+        }
     }
 </style>
