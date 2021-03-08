@@ -101,6 +101,12 @@ export default {
     }
 
     .header-item {
+      user-select: none;
+      -moz-user-select: -moz-none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+
       &.alligned {
         display: flex;
         align-items: center;
@@ -118,12 +124,24 @@ export default {
       margin-left: auto;
       margin-right: 20px;
       margin-top: 15px;
+
+      user-select: none;
+      -moz-user-select: -moz-none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
     }
 
     .header-item-top-right {
       margin-left: auto;
       margin-right: 20px;
       margin-top: 0px;
+
+      user-select: none;
+      -moz-user-select: -moz-none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
     }
 
     .header-content {
