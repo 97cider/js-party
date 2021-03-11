@@ -1,5 +1,5 @@
 <template>
-  <transition>
+  <transition name="left-slide">
     <div v-show="!isExpanded" class="side-menu">
         <slot></slot>
     </div>
@@ -17,6 +17,7 @@ export default {
 
 <style lang="scss" scoped>
   .side-menu {
+    transform-origin: 100% 50%;
     background-color: tomato;
     height: 100vh;
     width: 30%;

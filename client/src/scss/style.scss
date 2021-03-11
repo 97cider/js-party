@@ -57,4 +57,22 @@ body {
     100% {
       transform: scaleX(1);
     }
+}
+
+.left-slide-enter-active {
+  animation: slide-in .2s;
+}
+.left-slide-leave-active {
+  animation: slide-in .2s reverse;
+}
+@keyframes l-slide {
+  0% {
+    transform: translateX(20);
   }
+  50% {
+    transform: translateX(10);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
