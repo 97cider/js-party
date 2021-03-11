@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue"/>
+    <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue" 
+      v-on:toggleSideMenu="minimizedSidebar = !minimizedSidebar" v-on:closeSideMenu="minimizedSidebar = false"/>
     <!-- Welcome to the new room!
     <input v-model="username" placeholder="UserName"> -->
     <!-- <p>Your Username is: {{ username }}</p>
@@ -8,24 +9,27 @@
     <div v-show="!username">
       <JoinPrompt v-on:joinRoom="joinRoom"/>
     </div>
+    <SideMenu :isExpanded="!minimizedSidebar">
+      <div>Room ID = {{ $route.params.roomId }}</div>
+      <div>
+        List of users:
+          <li v-for="client in this.clients" :key="client">
+            UserName: {{ client }}
+          </li>
+            <!-- {{ client }}
+          </li> -->
+      </div>
+
+      <div>
+        Current Media Queue:
+          <li v-for="item in this.queueContent" :key="item">
+            <QueueElement :songName="item.title" :url="item.url"/>
+          </li>
+      </div>
+    </SideMenu>
+
     <button v-on:click="pauseVideo">Pause Video!</button>
     <button v-on:click="setVideoTimeDev">Set Time Test!</button>
-    <div>Room ID = {{ $route.params.roomId }}</div>
-    <div>
-      List of users:
-        <li v-for="client in this.clients" :key="client">
-          UserName: {{ client }}
-        </li>
-          <!-- {{ client }}
-        </li> -->
-    </div>
-
-    <div>
-      Current Media Queue:
-        <li v-for="item in this.queueContent" :key="item">
-          <QueueElement :songName="item.title" :url="item.url"/>
-        </li>
-    </div>
 
     <input type="checkbox" id="checkbox" v-on:change="toggleLooping" v-model="isLooping">
     <label for="checkbox">Loop Playlist: {{ isLooping }}</label>
@@ -49,6 +53,7 @@ import MediaPlayer from '../components/MediaPlayer.vue';
 import Header from '../components/HeaderBar.vue';
 import JoinPrompt from '../components/JoinPrompt.vue';
 import QueueElement from '../components/QueueElement.vue';
+import SideMenu from '../components/SideMenu.vue';
 
 export default {
   components: { MediaPlayer },
@@ -57,7 +62,8 @@ export default {
     MediaPlayer,
     Header,
     JoinPrompt,
-    QueueElement
+    QueueElement,
+    SideMenu
   },
   data: function() {
     return {
@@ -70,7 +76,8 @@ export default {
       playerState: false,
       currentMediaType: "youtube",
       progressionType: "Linear",
-      isLooping: false
+      isLooping: false,
+      minimizedSidebar: false,
     }
   },
   methods: {

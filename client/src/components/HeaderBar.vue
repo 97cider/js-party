@@ -18,7 +18,14 @@
           <div class="header-item alligned">
             <SearchBar  v-on:playUrl="playUrl"  v-on:addToQueue="addToQueue"/>
           </div>
-          <div class="header-item-right">
+          <!-- Header Gutter -->
+          <div class="header-item-right"></div>
+          <div class="header-item padded">
+            <div v-on:click="toggleSideMenu">
+              <img class="button-icon hoverable" alt="^" src="public/svgs/icon-settings.svg">
+            </div>
+          </div>
+          <div class="header-item padded desktop">
             <div v-on:click="hideHeaderBar">
               <img class="button-icon hoverable" alt="^" src="public/svgs/expand-icon.svg">
             </div>
@@ -56,6 +63,7 @@ export default {
   methods: {
     hideHeaderBar: function () {
       this.isMinimized = true;
+      this.closeSideMenu();
       this.refreshIdleTimer();
     },
     showHeaderBar: function () {
@@ -83,6 +91,12 @@ export default {
     },
     addToQueue: function (url) {
       this.$emit('addToQueue', url);
+    },
+    toggleSideMenu: function () {
+      this.$emit('toggleSideMenu');
+    },
+    closeSideMenu: function () {
+      this.$emit('closeSideMenu');
     }
   },
   mounted: function () {
@@ -117,6 +131,10 @@ export default {
       }
       &.mobile {
         display: none;
+      }
+      &.padded {
+        margin-right: 20px;
+        margin-top: 15px;
       }
     }
 
