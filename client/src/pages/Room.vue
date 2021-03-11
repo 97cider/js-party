@@ -26,24 +26,24 @@
             <QueueElement :songName="item.title" :url="item.url"/>
           </li>
       </div>
+
+      <button v-on:click="pauseVideo">Pause Video!</button>
+      <button v-on:click="setVideoTimeDev">Set Time Test!</button>
+
+      <input type="checkbox" id="checkbox" v-on:change="toggleLooping" v-model="isLooping">
+      <label for="checkbox">Loop Playlist: {{ isLooping }}</label>
+
+      <button v-on:click="enableShuffle" :disabled="progressionType == 'FullyRandom'">Shuffle</button>
+      <button v-on:click="enableBiasedShuffle" :disabled="progressionType == 'BiasedRandom'">BiasedShuffle</button>
+
+      <button v-on:click="skipVideo">></button>
     </SideMenu>
 
-    <button v-on:click="pauseVideo">Pause Video!</button>
-    <button v-on:click="setVideoTimeDev">Set Time Test!</button>
-
-    <input type="checkbox" id="checkbox" v-on:change="toggleLooping" v-model="isLooping">
-    <label for="checkbox">Loop Playlist: {{ isLooping }}</label>
-
-    <button v-on:click="enableShuffle" :disabled="progressionType == 'FullyRandom'">Shuffle</button>
-    <button v-on:click="enableBiasedShuffle" :disabled="progressionType == 'BiasedRandom'">BiasedShuffle</button>
-
-    <button v-on:click="skipVideo">></button>
-
     <div>
-      WOAH THIS IS THE CURRENT VIDEO: {{currentVideo}}
+      WOAH THIS IS THE CURRENT VIDEO: {{getCurrentMediaUrl}}
     </div>
 
-    <MediaPlayer :videoId="currentVideo" :mediaType="currentMediaType" @onVideoEnd="endVideo" ref="mediaPlayer"/>
+    <MediaPlayer :videoId="getCurrentMediaUrl" :mediaType="getCurrentMediaType" @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>
 
@@ -72,9 +72,8 @@ export default {
       roomId: "",
       clients: [],
       queueContent: [],
-      currentVideo: "",
+      currentMedia: null,
       playerState: false,
-      currentMediaType: "youtube",
       progressionType: "Linear",
       isLooping: false,
       minimizedSidebar: false,
@@ -182,8 +181,7 @@ export default {
             }
             if (data.actionType === 'PlayYoutubeVideo') {
               vm.$refs.mediaPlayer.setMedia();
-              vm.currentVideo = data.media.url;
-              vm.currentMediaType = data.media.mediaType;
+              vm.currentMedia = data.media;
               return;
             }
             if (data.actionType === 'ToggleVideo') {
@@ -196,8 +194,7 @@ export default {
             }
             if (data.actionType === 'VideoSync') {
               vm.$refs.mediaPlayer.setMedia();
-              vm.currentVideo = data.media.url;
-              vm.currentMediaType = data.media.mediaType;
+              vm.currentMedia = data.media;
               // this is honestly the lamest shit i have ever had to work around in my entire life
               // Note: This is a hack, until I decouple the video player, this is gonna stay
               setTimeout(() => vm.$refs.mediaPlayer.setMediaTime(data.time), 1000);    
@@ -258,6 +255,20 @@ export default {
   },
   mounted () {
     this.roomId = this.$route.params.roomId;
+  },
+  computed: {
+    getCurrentMediaUrl() {
+      if(!this.currentMedia) {
+        return "";
+      }
+      return this.currentMedia.url;
+    },
+    getCurrentMediaType() {
+      if(!this.currentMedia) {
+        return "";
+      }
+      return this.currentMedia.mediaType;
+    }
   }
 }
 </script>

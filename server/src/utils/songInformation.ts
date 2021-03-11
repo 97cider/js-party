@@ -20,6 +20,7 @@ export class SongInformation {
                 console.log(`Video title is ${mediaTitle}`);
                 media.title = mediaTitle;
                 media.mediaType = MediaType[type];
+                media.thumbnailUrl = videoData.snippet.thumbnails.high.url;
             })
             .catch((error : any) => {
                 console.error(error);
