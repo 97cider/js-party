@@ -4,7 +4,7 @@ export class Media {
     title: string;
     url: string;
     name: string | undefined;
-    bandName: string | undefined;
+    artistName: string | undefined;
     albumName: string | undefined;
     thumbnailUrl: string | undefined;
     length: number | undefined;

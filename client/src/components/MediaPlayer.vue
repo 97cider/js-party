@@ -1,7 +1,7 @@
 <template>
   <div id="mediaPlayer">
-    <div v-show="isYoutubeVideo">
-      <youtube :video-id="youtubeUrl" :player-vars="youtubePlayerOptions" ref="youtube" />
+    <div v-show="false">
+        <youtube :video-id="youtubeUrl" :player-vars="youtubePlayerOptions" ref="youtube" />
     </div>
     <button v-on:click="getTimeTest">Get SoundCloud Time!</button>
     <div v-show="!isYoutubeVideo">

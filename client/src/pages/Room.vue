@@ -2,13 +2,11 @@
   <div id="app">
     <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue" 
       v-on:toggleSideMenu="minimizedSidebar = !minimizedSidebar" v-on:closeSideMenu="minimizedSidebar = false"/>
-    <!-- Welcome to the new room!
-    <input v-model="username" placeholder="UserName"> -->
-    <!-- <p>Your Username is: {{ username }}</p>
-    <button v-on:click="joinRoom">Join Room!</button> -->
+    
     <div v-show="!username">
       <JoinPrompt v-on:joinRoom="joinRoom"/>
     </div>
+    
     <SideMenu :isExpanded="!minimizedSidebar">
       <div>Room ID = {{ $route.params.roomId }}</div>
       <div>
@@ -39,11 +37,18 @@
       <button v-on:click="skipVideo">></button>
     </SideMenu>
 
-    <div>
-      WOAH THIS IS THE CURRENT VIDEO: {{getCurrentMediaUrl}}
+    <div class="media-content">
+      <div class="media-item">
+        <MediaPlayer :videoId="getCurrentMediaUrl" :mediaType="getCurrentMediaType" @onVideoEnd="endVideo" ref="mediaPlayer"/>
+      </div>
+      <div class="media-item">
+        <MediaIcon v-on:toggle="pauseVideo" :mediaState="playerState" :mediaUrl="getCurrentMediaThumbnail"/>
+      </div>
+      <div class="media-item">
+        <MediaDescription :media="currentMedia"/>
+      </div>
     </div>
 
-    <MediaPlayer :videoId="getCurrentMediaUrl" :mediaType="getCurrentMediaType" @onVideoEnd="endVideo" ref="mediaPlayer"/>
   </div>
 </template>
 
@@ -54,6 +59,8 @@ import Header from '../components/HeaderBar.vue';
 import JoinPrompt from '../components/JoinPrompt.vue';
 import QueueElement from '../components/QueueElement.vue';
 import SideMenu from '../components/SideMenu.vue';
+import MediaDescription from '../components/MediaDescription.vue';
+import MediaIcon from '../components/MediaIcon.vue';
 
 export default {
   components: { MediaPlayer },
@@ -63,7 +70,9 @@ export default {
     Header,
     JoinPrompt,
     QueueElement,
-    SideMenu
+    SideMenu,
+    MediaDescription,
+    MediaIcon
   },
   data: function() {
     return {
@@ -262,6 +271,12 @@ export default {
         return "";
       }
       return this.currentMedia.url;
+    },
+    getCurrentMediaThumbnail() {
+      if(!this.currentMedia) {
+        return "";
+      }
+      return this.currentMedia.thumbnailUrl;
     },
     getCurrentMediaType() {
       if(!this.currentMedia) {
