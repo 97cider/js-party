@@ -44,11 +44,10 @@
       <div class="media-item">
         <MediaIcon v-on:toggle="pauseVideo" :mediaState="playerState" :mediaUrl="getCurrentMediaThumbnail"/>
       </div>
-      <div class="media-item">
+      <div class="media-item gutter">
         <MediaDescription :media="currentMedia"/>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -292,4 +291,20 @@ export default {
 #app {
   background-color: rgb(34, 40, 49);
 }
+
+.media-content {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20vh;
+}
+
+.media-item {
+  padding-right: 50px;
+  &.gutter {
+    width: 15%;
+  }
+}
+
 </style>>

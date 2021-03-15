@@ -3,7 +3,6 @@
     <div v-show="false">
         <youtube :video-id="youtubeUrl" :player-vars="youtubePlayerOptions" ref="youtube" />
     </div>
-    <button v-on:click="getTimeTest">Get SoundCloud Time!</button>
     <div v-show="!isYoutubeVideo">
       <iframe id="soundcloudPlayer" width="100%" height="166" scrolling="no" frameborder="no" :src="soundCloudUrl"></iframe>
     </div>
@@ -162,3 +161,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .media-content {
+    display: none;
+  }
+</style>
