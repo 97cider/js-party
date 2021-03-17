@@ -67,7 +67,8 @@ export class SongInformation {
                 }
 
                 media.mediaType = MediaType[type];
-                media.thumbnailUrl = videoData.snippet.thumbnails.high.url;
+                console.log(videoData.snippet.thumbnails);
+                media.thumbnailUrl = videoData.snippet.thumbnails.standard.url;
             })
             .catch((error : any) => {
                 console.error(error);

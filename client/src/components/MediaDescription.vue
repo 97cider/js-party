@@ -1,13 +1,18 @@
 <template>
   <div class="media-description">
     <div class="description-item">
-      You are listening to
+      <span class="song-descriptors">You are listening to</span>
     </div>
     <div class="description-item">
-      {{getSongName}}
+      <div class="song-name-bbox">
+        <span class="song-header">{{getSongName}}</span>
+      </div>
     </div>
     <div class="description-item">
-      by {{getSongArtist}}
+      <span class="song-descriptors">by</span> 
+    </div>
+    <div class="description-item">
+      <span class="song-artist">{{getSongArtist}}</span>
     </div>
   </div>
 </template>
@@ -40,4 +45,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .media-description {
+    
+    color: white;
+    
+    font-family: roc-grotesk, sans-serif; 
+    font-size: 24px;
+    padding-bottom: 10px;
+  }
+
+  .description-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .song-header {
+    font-size: 60px;
+    font-weight: 900;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .song-artist {
+    font-size: 48px;
+    font-weight: 900;
+  }
+
+  .song-descriptors {
+    font-size: 40px;
+  }
+
+  .song-name-bbox {
+    border-style: solid;
+    border-width: 5px;
+    border-color: white;
+    padding: 10px;
+  }
 </style>

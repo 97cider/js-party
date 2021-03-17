@@ -49,10 +49,13 @@ export default {
     width: 400px;
     height: 400px;
     object-fit: cover;
+
+    &:hover {
+      filter: blur(20px);
+    }
  }
 
  .thumbnail-overlay {
-    background: tomato;
     position: absolute;
     top: 0;
     left: 0;
@@ -64,8 +67,8 @@ export default {
  }
 
  .pause-button {
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background: cyan; 
  }

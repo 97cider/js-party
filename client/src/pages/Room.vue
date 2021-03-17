@@ -44,9 +44,10 @@
       <div class="media-item">
         <MediaIcon v-on:toggle="pauseVideo" :mediaState="playerState" :mediaUrl="getCurrentMediaThumbnail"/>
       </div>
-      <div class="media-item gutter">
+      <div class="media-item">
         <MediaDescription :media="currentMedia"/>
       </div>
+      <div class="media-item gutter"></div>
     </div>
   </div>
 </template>
