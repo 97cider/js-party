@@ -9,12 +9,12 @@ export class Constants {
         type: 'soundcloud',
         prefixes: ['w.soundcloud.com', 'soundcloud.com']
     };
-    static readonly ExtraSuffixes = ['MV', '(FULL ALBUM)', '(full album)', 'MusicVideo', 
-                                     'MUSIC VIDEO', '「MV」', '【MV】', '【Music Video】',
+    static readonly ExtraSuffixes = ['(FULL ALBUM)', '(full album)', '(Full Album)', 'MusicVideo', 
+                                     'MUSIC VIDEO', '[MV]' ,'「MV」', '【MV】', 'MV', '【Music Video】', '(Official Video)',
                                      'Full Album', '[Full Album]', '(Official Music Video)',
                                      '【ENG SUB】', 
     ];
 
     static readonly RegexSuffixes = [ /((Ending)\s+[0-9]+\s?(Full)?)/gi, ];
-    static readonly SongDividers = ['-', '|'];
+    static readonly SongDividers = ['-', '|', ' _ '];
 }

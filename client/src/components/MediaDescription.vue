@@ -4,8 +4,12 @@
       <span class="song-descriptors">You are listening to</span>
     </div>
     <div class="description-item">
-      <div class="song-name-bbox">
-        <span class="song-header">{{getSongName}}</span>
+      <div class="song-name">
+          <span class="song-header"> 
+            <div class="song-name-bbox">
+              {{getSongName}}
+            </div>
+          </span>
       </div>
     </div>
     <div class="description-item">
@@ -60,10 +64,12 @@ export default {
   }
 
   .song-header {
-    font-size: 60px;
+    font-size: 48px;
     font-weight: 900;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+    max-width: 35vw;
+    display: flex;
   }
 
   .song-artist {
@@ -77,7 +83,7 @@ export default {
 
   .song-name-bbox {
     border-style: solid;
-    border-width: 5px;
+    border-width: 8px;
     border-color: white;
     padding: 10px;
   }

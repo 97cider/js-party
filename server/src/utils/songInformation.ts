@@ -39,7 +39,7 @@ export class SongInformation {
                 // actually ive seen it go the otherway more often lol, so we gonna do the other way
                 let divIndex = newTitle.indexOf(divider);
                 artistName = newTitle.substring(0, divIndex);
-                songName = newTitle.substring(divIndex + 1, newTitle.length);
+                songName = newTitle.substring(divIndex + divider.length, newTitle.length);
             }
         });
         if (artistName != '') {
