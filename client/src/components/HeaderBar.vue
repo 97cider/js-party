@@ -121,6 +121,9 @@ export default {
       -webkit-user-select: none;
       -ms-user-select: none;
 
+      display: flex;
+      align-items: center;
+
       &.alligned {
         display: flex;
         align-items: center;
@@ -134,7 +137,6 @@ export default {
       }
       &.padded {
         margin-right: 20px;
-        margin-top: 15px;
       }
     }
 
@@ -192,7 +194,6 @@ export default {
 
     .logo {
         height: 35px;
-	      margin: 15px 0px 0px 0px;
         &.mobile {
           padding-left: 10px;
           padding-right: 10px;
