@@ -26,6 +26,9 @@
             </div>
           </div>
           <div class="header-item padded desktop">
+            <FullScreenButton/>
+          </div>
+          <div class="header-item padded desktop">
             <div v-on:click="hideHeaderBar">
               <img class="button-icon hoverable" alt="^" src="public/svgs/expand-icon.svg">
             </div>
@@ -34,7 +37,7 @@
       </transition>
     </div>
     <transition name="pop-slide">
-      <div v-show="isMinimized && !isIdle" class="minimized-header">
+      <div v-show="isMinimized && !isIdle" v-on:mouseover="stopIdle" v-on:mouseleave="allowIdle" class="minimized-header">
         <div class="header-item-top-right">
           <div class="header-expand-content" v-on:click="showHeaderBar">
             <img class="button-icon inverted" alt="^" src="public/svgs/expand-icon.svg">
@@ -47,17 +50,21 @@
 
 <script>
 import SearchBar from './SearchBar.vue';
+import FullScreenButton from './FullScreenButton.vue';
 
 export default {
   name: 'Header',
   components: {
-    SearchBar
+    SearchBar,
+    FullScreenButton,
   },
   data: function() {
     return {
       isMinimized: false,
       currentIdleTime: 0,
+      canBeIdle: false,
       isIdle: false,
+      isFullScreen: false,
     }
   },
   methods: {
@@ -73,11 +80,21 @@ export default {
     refreshIdleTimer: function () {
       this.currentIdleTime = 0;
       this.isIdle = false;
+      document.documentElement.style.cursor = 'auto';
+    },
+    allowIdle: function () {
+      this.canBeIdle = true;
+    },
+    stopIdle: function () {
+      this.canBeIdle = false;
     },
     icrementIdleTimer: function () {
       this.currentIdleTime += 1;
-      if (this.currentIdleTime > 10) {
+      if (this.currentIdleTime > 10 && this.canBeIdle) {
         this.isIdle = true;
+        if (this.isMinimized === true) {
+          document.documentElement.style.cursor = 'none';
+        }
       }
     },
     updateIdleTime: function () {
@@ -97,7 +114,7 @@ export default {
     },
     closeSideMenu: function () {
       this.$emit('closeSideMenu');
-    }
+    },
   },
   mounted: function () {
     window.addEventListener('mousemove',this.refreshIdleTimer);
