@@ -129,5 +129,6 @@ server.on('upgrade', function (request : any, socket : any, head : any) {
         });
     });
 });
+
 console.log(`Started the js-party server on port ${port}`);
 server.listen(8080);

@@ -16,7 +16,8 @@
             <img class="icon-right" alt="lt" src="public/svgs/icon-right.svg">
           </div>
           <div class="header-item alligned">
-            <SearchBar  v-on:playUrl="playUrl"  v-on:addToQueue="addToQueue"/>
+            <!-- <SearchBar  v-on:playUrl="playUrl"  v-on:addToQueue="addToQueue"/> -->
+            <slot></slot>
           </div>
           <!-- Header Gutter -->
           <div class="header-item-right"></div>
@@ -49,13 +50,11 @@
 </template>
 
 <script>
-import SearchBar from './SearchBar.vue';
 import FullScreenButton from './FullScreenButton.vue';
 
 export default {
   name: 'Header',
   components: {
-    SearchBar,
     FullScreenButton,
   },
   data: function() {
@@ -102,12 +101,6 @@ export default {
       setInterval(() => {
         vm.icrementIdleTimer();
       }, 100)
-    },
-    playUrl: function (url) {
-      this.$emit('playUrl', url);
-    },
-    addToQueue: function (url) {
-      this.$emit('addToQueue', url);
     },
     toggleSideMenu: function () {
       this.$emit('toggleSideMenu');

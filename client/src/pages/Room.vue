@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue" 
-      v-on:toggleSideMenu="minimizedSidebar = !minimizedSidebar" v-on:closeSideMenu="minimizedSidebar = false"/>
+      v-on:toggleSideMenu="minimizedSidebar = !minimizedSidebar" v-on:closeSideMenu="minimizedSidebar = false">
+      <SearchBar  v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue"/>
+    </Header>
     
     <div v-show="!username">
       <JoinPrompt v-on:joinRoom="joinRoom"/>
@@ -61,6 +63,7 @@ import QueueElement from '../components/QueueElement.vue';
 import SideMenu from '../components/SideMenu.vue';
 import MediaDescription from '../components/MediaDescription.vue';
 import MediaIcon from '../components/MediaIcon.vue';
+import SearchBar from '../components/SearchBar.vue';
 
 export default {
   components: { MediaPlayer },
@@ -72,7 +75,8 @@ export default {
     QueueElement,
     SideMenu,
     MediaDescription,
-    MediaIcon
+    MediaIcon,
+    SearchBar
   },
   data: function() {
     return {
