@@ -2,7 +2,7 @@
   <div id="app">
     <Header v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue" 
       v-on:toggleSideMenu="minimizedSidebar = !minimizedSidebar" v-on:closeSideMenu="minimizedSidebar = false">
-      <SearchBar  v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue"/>
+      <SearchBar  v-on:playUrl="addVideo"  v-on:addToQueue="addVideoToQueue" v-on:addToQueueById="addVideoToQueueById" v-on:playById="playVideoById"/>
     </Header>
     
     <div v-show="!username">
@@ -145,6 +145,19 @@ export default {
       this.connection.send(JSON.stringify({
             actionType: 'PlayYoutubeVideo',
             url: url
+      }));
+    },
+    playVideoById: function (id) {
+      this.connection.send(JSON.stringify({
+          actionType: 'PlayYoutubeVideoById',
+          id: id
+      }));
+    },
+    //TODO: reimplement media type when ready
+    addVideoToQueueById: function(id) {
+      this.connection.send(JSON.stringify({
+        actionType: 'AddSongToQueueById',
+        id: id,
       }));
     },
     addVideoToQueue: function(url) {

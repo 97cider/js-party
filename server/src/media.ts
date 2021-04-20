@@ -8,10 +8,11 @@ export class Media {
     albumName: string | undefined;
     thumbnailUrl: string | undefined;
     length: number | undefined;
-    mediaType: MediaType | undefined;
+    mediaType: MediaType;
 
     constructor(url : string) {
         this.url = url;
         this.title = '';
+        this.mediaType = MediaType.youtube;
     }
 }

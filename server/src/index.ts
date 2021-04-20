@@ -8,6 +8,7 @@ const { promisify } = require("util");
 const express = require('express');
 const uuid = require('uuid');
 const Room = require('./room.ts');
+const { SongInformation } = require('./utils/songInformation');
 
 require('dotenv').config();
 
@@ -35,6 +36,12 @@ app.use(function(req : any, res : any, next : any) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
+});
+
+app.get('/playlist', async(req : any, res: any) =>{
+    const url = req.query.url;
+    const items = await SongInformation.tryParsePlaylistURL(url);
+    res.send(JSON.stringify({items : items}));
 });
 
 app.post('/room', function(req : any, res : any) {

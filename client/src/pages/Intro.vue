@@ -23,7 +23,6 @@ export default {
             console.log(`Room ID: ${response.data.message}`);
             this.$router.push({ name: 'room', params: { roomId: response.data.message } })
           });
-
     }
   },
   mounted () {

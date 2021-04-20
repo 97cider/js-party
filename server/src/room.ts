@@ -129,6 +129,26 @@ class Room {
         });
     }
 
+    async AddVideoUrlToQueueById(id : string) {
+        // Builds a media object based on the song id and type
+        let songCandidate = await SongInformation.getSongInformation(id, 'youtube', '');
+
+        // TOOD: Expand queue system to limit to specific number of videos
+        this.mediaQueue.push(songCandidate);
+        this.biasedMediaQueue.push(songCandidate);
+
+        // TODO: eventual callbacks for adding a video to a queue
+        this.wss.clients.forEach((ws : any) => {
+            ws.send(JSON.stringify({ actionType: 'UpdateQueue', media: songCandidate }));
+        });
+    }
+
+    async directPlayVideoById(id: string) {
+        // Builds a media object based on the song id and type
+        let songCandidate = await SongInformation.getSongInformation(id, 'youtube', '');
+        this.playYoutubeVideo(songCandidate);
+    }
+
     async directPlayVideo(url : string) {
           // TODO: probably move this into getSongInformation
           let urlType = TypeUtils.parseUrl(url);
@@ -155,6 +175,10 @@ class Room {
             this.directPlayVideo(action.url);
             return;
         }
+        if (actionType === 'PlayYoutubeVideoById') {
+            this.directPlayVideoById(action.id);
+            return;
+        }
         if (actionType === 'ToggleVideo') {
             console.log(`HEY WE ARE TOGGLING THE VIDEO! ${actionType}`);
             this.toggleVideoState();
@@ -176,6 +200,10 @@ class Room {
         if (actionType === 'AddSongToQueue') 
         {
             this.AddVideoUrlToQueue(action.url);
+        }
+        if (actionType === 'AddSongToQueueById') 
+        {
+            this.AddVideoUrlToQueue(action.id);
         }
         if (actionType === 'EndVideo') {
             this.navigateToNextSong();
